@@ -1,5 +1,6 @@
 import mongoose, {Schema} from "mongoose";
 import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-generator';
+import jwt from "jsonwebtoken";
 
 const guestSchema = new Schema(
     {
@@ -32,7 +33,7 @@ guestSchema.methods.generateAccessToken = async function(){
         },
         process.env.GUEST_ACCESS_TOKEN_SECRET,
         {
-            expiresIn: GUEST_ACCESS_TOKEN_EXPIRY
+            expiresIn: process.env.GUEST_ACCESS_TOKEN_EXPIRY
         }
     )
 }
@@ -44,12 +45,12 @@ guestSchema.methods.generateRefreshToken = async function(){
         },
         process.env.GUEST_REFRESH_TOKEN_SECRET,
         {
-            expiresIn: GUEST_REFRESH_TOKEN_EXPIRY
+            expiresIn: process.env.GUEST_REFRESH_TOKEN_EXPIRY
         }
     )
 }
 
-guestSchema.statics.generateRandomGuestName = async function(){
+guestSchema.statics.generateRandomGuestName = function(){
     return uniqueNamesGenerator({
         dictionaries: [colors, adjectives, animals],
         style: 'capital',

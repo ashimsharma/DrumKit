@@ -1,47 +1,82 @@
 import { User } from "../models/users.model.js";
 import { Guest } from "../models/guests.model.js";
 import { ApiError } from "../utils/ApiError.js";
+import jwt from "jsonwebtoken";
 
 // Todo: Separate User and Guest Verification Logic.
 const verifyJWT = async (req, res, next) => {
     try {
         const token = req.cookies?.accessToken || req.headers("Authorization")?.replace("Bearer ", "");
-        
-        if(!token){
-            throw new ApiError(401, "Unauthorized request.");
+
+        if (!token) {
+            return res
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Token not provided."
+                    }
+                )
         }
 
-        const decodedToken = await jwt.verify(token, process.env.USER_ACCESS_TOKEN_SECRET);
-        
-        if(!decodedToken){
-            decodedToken = await jwt.verify(token, process.env.GUEST_ACCESS_TOKEN_SECRET);
+        let decodedToken;
+
+        try {
+            decodedToken = jwt.verify(token, process.env.USER_ACCESS_TOKEN_SECRET);
+        } catch (error) {
+            decodedToken = undefined;
+        }
+
+        if (!decodedToken) {
+            try {
+                decodedToken = jwt.verify(token, process.env.GUEST_ACCESS_TOKEN_SECRET);
+            } catch (error) {
+                decodedToken = undefined;
+            }
 
             if(!decodedToken){
-                throw new ApiError(401, "Unauthorized request.");
+                return res
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Unauthorized request."
+                    }
+                )
             }
         }
 
-        const user = await User.findById(decodedToken._id).select("-password -refreshToken");
+        let user = await User.findById(decodedToken._id).select("-password -refreshToken");
 
-        if(!user){
+        if (!user) {
             user = await Guest.findById(decodedToken._id).select("-refreshToken");
 
-            if(!user){
-                throw new ApiError(401, "Invalid Access Token.");
+            if (!user) {
+                return res
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Invalid Access Token."
+                    }
+                )
             }
-            else{
+            else {
                 req.isGuest = true;
             }
         }
-        else{
+        else {
             req.isGuest = false;
         }
 
         req.user = user;
-        
+
         next();
     } catch (error) {
-        throw new ApiError(401, "Invalid Access Token.");
+        throw new ApiError(400, error?.message);
     }
 }
 

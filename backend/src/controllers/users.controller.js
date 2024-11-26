@@ -2,13 +2,14 @@ import { Guest } from "../models/guests.model.js";
 import { User } from "../models/users.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { validateEmail, validateName, validatePassword } from "../utils/Validation.js";
+import jwt from "jsonwebtoken";
 
 const generateUserAccessAndRefreshTokens = async (id) => {
     try {
         const user = await User.findById(id);
 
         if (!user) {
-            throw new ApiError(500, "User not found");
+            throw new ApiError(401, "User not found");
         }
 
         const accessToken = user.generateAccessToken();
@@ -28,7 +29,7 @@ const generateGuestAccessAndRefreshTokens = async (id) => {
         const guest = await Guest.findById(id);
 
         if (!guest) {
-            throw new ApiError(500, "Guest user not found.");
+            throw new ApiError(401, "Guest user not found.");
         }
 
         const accessToken = await guest.generateAccessToken();
@@ -39,7 +40,7 @@ const generateGuestAccessAndRefreshTokens = async (id) => {
 
         return { accessToken, refreshToken };
     } catch (error) {
-        throw new ApiError(500, "Access and Refresh Token Generation Failed.");
+        throw new ApiError(500, error?.message);
     }
 }
 
@@ -119,7 +120,7 @@ const registerUser = async (req, res) => {
             .json(
                 {
                     statusCode: 200,
-                    data: { user: createdUser, accessToken, refreshToken },
+                    data: { user: createdUser, accessToken, refreshToken, isGuest: false },
                     message: "User Registered Successfully",
                     success: true
                 }
@@ -134,7 +135,7 @@ const loginUser = async (req, res) => {
         const { email, password } = req?.body;
 
         if (!email || !password) {
-            res
+            return res
             .status(400)
             .json(
                 {
@@ -146,7 +147,7 @@ const loginUser = async (req, res) => {
         }
 
         if (!(validateEmail(email) && validatePassword(password))){
-            res
+            return res
             .status(401)
             .json(
                 {
@@ -160,7 +161,7 @@ const loginUser = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            res
+            return res
             .status(404)
             .json(
                 {
@@ -174,7 +175,7 @@ const loginUser = async (req, res) => {
         const passwordCorrect = await user.isPasswordCorrect(password);
 
         if (!passwordCorrect) {
-            res
+            return res
             .status(401)
             .json(
                 {
@@ -194,19 +195,19 @@ const loginUser = async (req, res) => {
             secure: true
         };
 
-        res.status(200)
+        return res.status(200)
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", refreshToken, options)
             .json(
                 {
                     statusCode: 200,
-                    data: { user: loggedInUser, accessToken, refreshToken },
+                    data: { user: loggedInUser, accessToken, refreshToken, isGuest: false },
                     success: true,
                     message: "User logged in successfully."
                 }
             )
     } catch (error) {
-        throw new ApiError(500, "Something went wrong while logging in.")
+        throw new ApiError(500, error?.message)
     }
 };
 
@@ -214,18 +215,28 @@ const registerGuest = async (req, res, next) => {
     try {
         const generatedRandomName = Guest.generateRandomGuestName();
 
-        const guestUser = await Guest.create({ generatedRandomName });
+        const guestUser = await Guest.create({ name: generatedRandomName });
 
-        const createdGuestUser = await Guest.findById(guestUser._id).select("-refreshToken");
+        const createdGuestUser = await Guest.findById(guestUser._id).select("-refreshToken -updatedAt");
 
         if (!createdGuestUser) {
-            throw new ApiError(500, "Something went wrong while registering as guest.");
+            return res
+            .status(500)
+            .json(
+                {
+                    statusCode: 500,
+                    success: false,
+                    message: "Guest user registration failed."
+                }
+            )
         }
 
-        const { accessToken, refreshToken } = generateGuestAccessAndRefreshTokens(createdGuestUser._id);
+        const { accessToken, refreshToken } = await generateGuestAccessAndRefreshTokens(createdGuestUser._id);
 
-        res
+        return res
             .status(200)
+            .cookie("accessToken", accessToken)
+            .cookie("refreshToken", refreshToken)
             .json(
                 {
                     statusCode: 200,
@@ -235,7 +246,7 @@ const registerGuest = async (req, res, next) => {
                 }
             )
     } catch (error) {
-        throw new ApiError(500, "Something went wrong while registering as guest.");
+        throw new ApiError(500, error?.message);
     }
 }
 
@@ -261,7 +272,7 @@ const logoutUser = async (req, res, next) => {
         return res
             .status(200)
             .clearCookie("accessToken", options)
-            .clearCookie("refreshCookie", options)
+            .clearCookie("refreshToken", options)
             .json({
                 statusCode: 200,
                 data: { userUpdate },
@@ -280,10 +291,18 @@ const logoutGuest = async (req, res, next) => {
     try {
         const user = req?.user;
 
-        const userDelete = Guest.findByIdAndDelete(user._id);
+        const userDelete = await Guest.findByIdAndDelete(user._id);
 
         if (!userDelete) {
-            throw new ApiError(500, "Logout Failed.");
+            return res
+            .status(500)
+            .json(
+                {
+                    statusCode: 500,
+                    success: false,
+                    message: "Logout failed."
+                }
+            )
         }
 
         const options = { httpOnly: true, secure: true };
@@ -294,7 +313,7 @@ const logoutGuest = async (req, res, next) => {
             .clearCookie("refreshToken", options)
             .json({
                 statusCode: 200,
-                data: { userExist },
+                data: { user: userDelete },
                 success: true,
                 message: "Logout Successfull"
             })
@@ -342,28 +361,61 @@ const updateUser = async (req, res, next) => {
 const updatePassword = async(req, res, next) => {
     try {
         const {oldPassword, newPassword} = req.body;
-        const user = req.user;
+        const user = await User.findById(req.user._id);
     
         if (
             [oldPassword, newPassword].some((field) => field?.trim() === "")
         ) {
-            throw new ApiError(400, "All fields are required.");
+            return res
+            .status(400)
+            .json(
+                {
+                    statusCode: 400,
+                    success: false,
+                    message: "All fields are required."
+                }
+            )
+
         }
     
         if (!(validatePassword(oldPassword) && validatePassword(newPassword))) {
-            throw new ApiError(400, "Invalid credentials.");
+            return res
+            .status(401)
+            .json(
+                {
+                    statusCode: 401,
+                    success: false,
+                    message: "Invalid format."
+                }
+            )
         }
     
-        const isPasswordCorrect = user.isPasswordCorrect(oldPassword);
+        const passwordCorrect = await user.isPasswordCorrect(oldPassword);
     
-        if(!isPasswordCorrect){
-            throw new ApiError("Invalid Password")
+        if(!passwordCorrect){
+            return res
+            .status(401)
+            .json(
+                {
+                    statusCode: 401,
+                    success: false,
+                    message: "Invalid Password."
+                }
+            )
         }
     
-        const updatedPasswordUser = await User.findByIdAndUpdate(user._id, {$set: {password: newPassword}}, {new: true}).select("-password -refreshToken");
+        const updatedPasswordUser = await User.findOneAndUpdate({_id: user._id}, {password: newPassword}, {new: true}).select("-password -refreshToken -updatedAt");
     
         if(!updatedPasswordUser){
-            throw new ApiError(500, "Password Update Failed.");
+            return res
+            .status(500)
+            .json(
+                {
+                    statusCode: 500,
+                    success: false,
+                    message: "Password Update Failed."
+                }
+            );
         }
     
         return res
@@ -400,13 +452,21 @@ const getUserDetails = async (req, res, next) => {
 
 
 const deleteUser = async (req, res, next) => {
-    const user = req.user;
+    const user = await User.findById(req.user._id);
     const {password} = req.body;
 
-    const isPasswordCorrect = user.isPasswordCorrect(password);
+    const passwordCorrect = user.isPasswordCorrect(password);
 
-    if(!isPasswordCorrect){
-        throw new ApiError(404, "Wrong Password.");
+    if(!passwordCorrect){
+        return res
+        .status(404)
+        .json(
+            {
+                statusCode: 404,
+                success: false,
+                message: "Incorrect Password."
+            }
+        )
     }
 
     const userDelete = await User.findByIdAndDelete(user._id);
