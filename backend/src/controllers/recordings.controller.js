@@ -1,5 +1,5 @@
 import {ApiError} from "../utils/ApiError.js"
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import { Recording } from "../models/recordings.model.js";
 import { User } from "../models/users.model.js";
 import { Guest } from "../models/guests.model.js";
@@ -50,7 +50,15 @@ const getAllRecordings = async (req, res, next) => {
         const user = req.user;
 
         if(!user){
-            throw new ApiError(401, "Unauthorized Request.")
+            return res
+            .status(401)
+            .json(
+                {
+                    statusCode: 401,
+                    success: false,
+                    message: "Unauthorized Request."
+                }
+            )
         }
 
         const pipeline = [
@@ -86,8 +94,64 @@ const getAllRecordings = async (req, res, next) => {
             }
         )
     } catch (error) {
-        throw new ApiError(501, "Something went wrong while fetching recordings.")
+        throw new ApiError(501, error?.message)
     }
 }
 
-export {getAllRecordings, saveRecording};
+
+const deleteRecording = async (req, res, next) => {
+    const user = req.user;
+    const {id} = req.body;
+
+    if(!user){
+        return res
+        .status(401)
+        .json(
+            {
+                statusCode: 401,
+                success: false,
+                message: "Unauthorized request."
+            }
+        )
+    }
+
+    const deletedRecording = await Recording.findByIdAndDelete(id);
+
+    if(!deletedRecording){
+        return res
+        .status(500)
+        .json(
+            {
+                statusCode: 500,
+                success: false,
+                message: "Something went wrong while deleting recording."
+            }
+        )
+    }
+
+    const updatedRecordings = await User.findByIdAndUpdate(user._id, {$pull: {recordings: mongoose.Types.ObjectId(deletedRecording._id)}}, {new: true}).select("+recordings");
+
+    if(!updatedUser){
+        return res
+        .status(500)
+        .json(
+            {
+                statusCode: 500,
+                success: false,
+                message: "Something went wrong while updating user"
+            }
+        )
+    }
+
+    return res
+    .status(200)
+    .json(
+        {
+            statusCode: 200,
+            success: true,
+            message: "Recording Deleted."
+        }
+    )
+}
+
+export {getAllRecordings, saveRecording, deleteRecording};
