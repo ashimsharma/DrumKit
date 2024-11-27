@@ -58,9 +58,9 @@ const verifyJWT = async (req, res, next) => {
                 .status(401)
                 .json(
                     {
-                        statusCode: 401,
+                        statusCode: 404,
                         success: false,
-                        message: "Invalid Access Token."
+                        message: "User not found."
                     }
                 )
             }

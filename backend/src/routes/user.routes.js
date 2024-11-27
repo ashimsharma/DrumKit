@@ -1,5 +1,5 @@
 import Router from "express";
-import { deleteUser, getUserDetails, loginUser, logoutGuest, logoutUser, registerGuest, registerUser, updatePassword, updateUser } from "../controllers/users.controller.js";
+import { deleteUser, getUserDetails, loginUser, logoutGuest, logoutUser, registerGuest, registerUser, updateAccessToken, updatePassword, updateUser } from "../controllers/users.controller.js";
 import verifyJWT from "../middlewares/auth.middleware.js";
 
 const userRouter = Router();
@@ -7,6 +7,7 @@ const userRouter = Router();
 userRouter.route("/signup").post(registerUser);
 userRouter.route("/login").post(loginUser);
 userRouter.route("/register-guest").post(registerGuest);
+userRouter.route("/update-accesstoken").post(updateAccessToken);
 
 //secured routes
 userRouter.route("/logout-user").post(verifyJWT, logoutUser);

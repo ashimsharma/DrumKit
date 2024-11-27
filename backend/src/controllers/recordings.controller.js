@@ -129,7 +129,7 @@ const deleteRecording = async (req, res, next) => {
         )
     }
 
-    const updatedUser = await User.findByIdAndUpdate(user._id, {$pull: {recordings: mongoose.Types.ObjectId(deletedRecording._id)}}, {new: true}).select("+recordings");
+    const updatedUser = await User.findByIdAndUpdate(user._id, {$pull: {recordings: mongoose.Types.ObjectId(deletedRecording._id)}}, {new: true});
 
     if(!updatedUser){
         return res

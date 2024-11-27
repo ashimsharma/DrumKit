@@ -2,7 +2,7 @@ import { Guest } from "../models/guests.model.js";
 import { User } from "../models/users.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { validateEmail, validateName, validatePassword } from "../utils/Validation.js";
-import jwt from "jsonwebtoken";
+import jwt, { decode } from "jsonwebtoken";
 
 const generateUserAccessAndRefreshTokens = async (id) => {
     try {
@@ -52,26 +52,26 @@ const registerUser = async (req, res) => {
             [firstname, lastname, email].some((field) => field?.trim() === "")
         ) {
             return res
-            .status(401)
-            .json(
-                {
-                    statusCode: 401,
-                    success: false,
-                    message: "All fields are required."
-                }
-            )
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "All fields are required."
+                    }
+                )
         }
 
         if (!(validateEmail(email) && validateName(firstname) && validateName(lastname) && validatePassword(password))) {
             return res
-            .status(400)
-            .json(
-                {
-                    statusCode: 400,
-                    success: false,
-                    message: "Invalid Credentials"
-                }
-            )
+                .status(400)
+                .json(
+                    {
+                        statusCode: 400,
+                        success: false,
+                        message: "Invalid Credentials"
+                    }
+                )
         }
 
         const existingUser = await User.findOne({ email });
@@ -79,14 +79,14 @@ const registerUser = async (req, res) => {
 
         if (existingUser) {
             return res
-            .status(409)
-            .json(
-                {
-                    statusCode: 409,
-                    success: false,
-                    message: "User with email already exists."
-                }
-            )
+                .status(409)
+                .json(
+                    {
+                        statusCode: 409,
+                        success: false,
+                        message: "User with email already exists."
+                    }
+                )
         }
 
         const user = await User.create({ firstname, lastname, email, password });
@@ -97,17 +97,17 @@ const registerUser = async (req, res) => {
 
         if (!createdUser) {
             return res
-            .status(501)
-            .json(
-                {
-                    statusCode: 501,
-                    success: false,
-                    message: "Something went wrong while saving the user."
-                }
-            )
+                .status(501)
+                .json(
+                    {
+                        statusCode: 501,
+                        success: false,
+                        message: "Something went wrong while saving the user."
+                    }
+                )
         }
 
-        const {accessToken, refreshToken} = await generateUserAccessAndRefreshTokens(createdUser._id);
+        const { accessToken, refreshToken } = await generateUserAccessAndRefreshTokens(createdUser._id);
 
         const options = {
             httpOnly: true,
@@ -136,54 +136,54 @@ const loginUser = async (req, res) => {
 
         if (!email || !password) {
             return res
-            .status(400)
-            .json(
-                {
-                    statusCode: 400,
-                    success: false,
-                    message: "Email and Password are required."
-                }
-            )
+                .status(400)
+                .json(
+                    {
+                        statusCode: 400,
+                        success: false,
+                        message: "Email and Password are required."
+                    }
+                )
         }
 
-        if (!(validateEmail(email) && validatePassword(password))){
+        if (!(validateEmail(email) && validatePassword(password))) {
             return res
-            .status(401)
-            .json(
-                {
-                    statusCode: 401,
-                    success: false,
-                    message: "Invalid Credentials."
-                }
-            )
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Invalid Credentials."
+                    }
+                )
         }
 
         const user = await User.findOne({ email });
 
         if (!user) {
             return res
-            .status(404)
-            .json(
-                {
-                    statusCode: 404,
-                    success: false,
-                    message: "User not found."
-                }
-            )
+                .status(404)
+                .json(
+                    {
+                        statusCode: 404,
+                        success: false,
+                        message: "User not found."
+                    }
+                )
         }
 
         const passwordCorrect = await user.isPasswordCorrect(password);
 
         if (!passwordCorrect) {
             return res
-            .status(401)
-            .json(
-                {
-                    statusCode: 401,
-                    success: false,
-                    message: "Wrong Password."
-                }
-            )
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Wrong Password."
+                    }
+                )
         }
 
         const { accessToken, refreshToken } = await generateUserAccessAndRefreshTokens(user._id);
@@ -221,14 +221,14 @@ const registerGuest = async (req, res, next) => {
 
         if (!createdGuestUser) {
             return res
-            .status(500)
-            .json(
-                {
-                    statusCode: 500,
-                    success: false,
-                    message: "Guest user registration failed."
-                }
-            )
+                .status(500)
+                .json(
+                    {
+                        statusCode: 500,
+                        success: false,
+                        message: "Guest user registration failed."
+                    }
+                )
         }
 
         const { accessToken, refreshToken } = await generateGuestAccessAndRefreshTokens(createdGuestUser._id);
@@ -295,14 +295,14 @@ const logoutGuest = async (req, res, next) => {
 
         if (!userDelete) {
             return res
-            .status(500)
-            .json(
-                {
-                    statusCode: 500,
-                    success: false,
-                    message: "Logout failed."
-                }
-            )
+                .status(500)
+                .json(
+                    {
+                        statusCode: 500,
+                        success: false,
+                        message: "Logout failed."
+                    }
+                )
         }
 
         const options = { httpOnly: true, secure: true };
@@ -358,74 +358,74 @@ const updateUser = async (req, res, next) => {
     }
 };
 
-const updatePassword = async(req, res, next) => {
+const updatePassword = async (req, res, next) => {
     try {
-        const {oldPassword, newPassword} = req.body;
+        const { oldPassword, newPassword } = req.body;
         const user = await User.findById(req.user._id);
-    
+
         if (
             [oldPassword, newPassword].some((field) => field?.trim() === "")
         ) {
             return res
-            .status(400)
-            .json(
-                {
-                    statusCode: 400,
-                    success: false,
-                    message: "All fields are required."
-                }
-            )
+                .status(400)
+                .json(
+                    {
+                        statusCode: 400,
+                        success: false,
+                        message: "All fields are required."
+                    }
+                )
 
         }
-    
+
         if (!(validatePassword(oldPassword) && validatePassword(newPassword))) {
             return res
-            .status(401)
-            .json(
-                {
-                    statusCode: 401,
-                    success: false,
-                    message: "Invalid format."
-                }
-            )
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Invalid format."
+                    }
+                )
         }
-    
+
         const passwordCorrect = await user.isPasswordCorrect(oldPassword);
-    
-        if(!passwordCorrect){
+
+        if (!passwordCorrect) {
             return res
-            .status(401)
-            .json(
-                {
-                    statusCode: 401,
-                    success: false,
-                    message: "Invalid Password."
-                }
-            )
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Invalid Password."
+                    }
+                )
         }
-    
-        const updatedPasswordUser = await User.findOneAndUpdate({_id: user._id}, {password: newPassword}, {new: true}).select("-password -refreshToken -updatedAt");
-    
-        if(!updatedPasswordUser){
+
+        const updatedPasswordUser = await User.findOneAndUpdate({ _id: user._id }, { password: newPassword }, { new: true }).select("-password -refreshToken -updatedAt");
+
+        if (!updatedPasswordUser) {
             return res
-            .status(500)
-            .json(
-                {
-                    statusCode: 500,
-                    success: false,
-                    message: "Password Update Failed."
-                }
-            );
+                .status(500)
+                .json(
+                    {
+                        statusCode: 500,
+                        success: false,
+                        message: "Password Update Failed."
+                    }
+                );
         }
-    
+
         return res
-        .status(200)
-        .json({
-            statusCode: 200,
-            data: {updatedPasswordUser},
-            success: true,
-            message: "Password Update Successfull"
-        })
+            .status(200)
+            .json({
+                statusCode: 200,
+                data: { updatedPasswordUser },
+                success: true,
+                message: "Password Update Successfull"
+            })
     } catch (error) {
         throw new ApiError(500, error?.message || "Password Update Failed.");
     }
@@ -436,15 +436,15 @@ const getUserDetails = async (req, res, next) => {
         const user = req.user;
 
         return res
-        .status(200)
-        .json(
-            {
-                statusCode: 200,
-                data: {user: req.user, isGuest: req.isGuest},
-                success: true,
-                message: "User details fetched successfully."
-            }
-        )
+            .status(200)
+            .json(
+                {
+                    statusCode: 200,
+                    data: { user: req.user, isGuest: req.isGuest },
+                    success: true,
+                    message: "User details fetched successfully."
+                }
+            )
     } catch (error) {
         throw new ApiError(500, "User details fetching failed.");
     }
@@ -453,39 +453,130 @@ const getUserDetails = async (req, res, next) => {
 
 const deleteUser = async (req, res, next) => {
     const user = await User.findById(req.user._id);
-    const {password} = req.body;
+    const { password } = req.body;
 
     const passwordCorrect = user.isPasswordCorrect(password);
 
-    if(!passwordCorrect){
+    if (!passwordCorrect) {
         return res
-        .status(404)
-        .json(
-            {
-                statusCode: 404,
-                success: false,
-                message: "Incorrect Password."
-            }
-        )
+            .status(404)
+            .json(
+                {
+                    statusCode: 404,
+                    success: false,
+                    message: "Incorrect Password."
+                }
+            )
     }
 
     const userDelete = await User.findByIdAndDelete(user._id);
 
-    if(!userDelete){
+    if (!userDelete) {
         throw new ApiError(500, "Account deletion failed.");
     }
 
     return res
-    .status(200)
-    .clearCookie("accessToken")
-    .clearCookie("refreshToken")
-    .json(
-        {
-            statusCode: 200,
-            message: "Account Deletion Successfull.",
-            success: true
-        }
-    );
+        .status(200)
+        .clearCookie("accessToken")
+        .clearCookie("refreshToken")
+        .json(
+            {
+                statusCode: 200,
+                message: "Account Deletion Successfull.",
+                success: true
+            }
+        );
 }
 
-export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser };
+const updateAccessToken = async (req, res, next) => {
+    const { token, isGuest } = req.body;
+
+    if (!token) {
+        return res
+            .status(401)
+            .json(
+                {
+                    statusCode: 401,
+                    success: false,
+                    message: "Access Token is required."
+                }
+            );
+    }
+
+    //Todo: Remove Code Duplication.(modularise)
+    jwt.verify(token, process.env.USER_REFRESH_TOKEN_SECRET, async (err, decoded) => {
+        if (err) {
+            jwt.verify(token, process.env.GUEST_REFRESH_TOKEN_SECRET, async (err, decoded) => {
+                if (err) {
+                    return res
+                        .status(401)
+                        .json(
+                            {
+                                statusCode: 401,
+                                success: false,
+                                message: "Invalid Access Token."
+                            }
+                        )
+                }
+
+                const guestUser = await Guest.findById(decoded._id);
+
+                if (!guestUser) {
+                    return res
+                        .status(404)
+                        .json(
+                            {
+                                statusCode: 404,
+                                success: false,
+                                message: "User not found."
+                            }
+                        )
+                }
+
+                const accessToken = guestUser.generateAccessToken();
+
+                return res
+                    .status(200)
+                    .cookie("accessToken", accessToken)
+                    .json(
+                        {
+                            data: { accessToken },
+                            statusCode: 200,
+                            success: true,
+                            message: "Access Token Updated."
+                        }
+                    )
+            })
+        }
+
+        const user = await User.findById(decoded._id);
+
+        if (!user) {
+            return res
+                .status(404)
+                .json(
+                    {
+                        statusCode: 404,
+                        success: false,
+                        message: "User not found."
+                    }
+                )
+        }
+
+        const accessToken = user.generateAccessToken();
+
+        return res
+            .status(200)
+            .cookie("accessToken", accessToken)
+            .json(
+                {
+                    data: { accessToken },
+                    statusCode: 200,
+                    success: true,
+                    message: "Access Token Updated."
+                }
+            )
+    });
+}
+
+export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser, updateAccessToken };
