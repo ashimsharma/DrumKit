@@ -13,36 +13,36 @@ const saveRecording = async (req, res, next) => {
             throw new ApiError(401, "Unauthorized Request.")
         }
         
-        const {data} = req.body;
+        const {name, recordedData} = req.body;
         
         const createdRecording = await Recording.create(
             {
-                name: data.name,
-                recordedData: data.recordedData,
-                ownerType: isGuest ? "Guest" : "User"
+                name: name,
+                recordedData: recordedData,
+                ownerType: isGuest ? "Guest" : "User",
+                owner: new mongoose.Types.ObjectId(user._id)
             }
         );
 
         if(!isGuest){
-            await User.findByIdAndUpdate(user._id, {"$push": {recordings: createdRecording._id}},{new: true});
+            await User.findByIdAndUpdate(user._id, {"$push": {recordings: new mongoose.Types.ObjectId(createdRecording._id)}},{new: true});
         }
         else{
-            await Guest.findByIdAndUpdate(user._id, {"$push": {recordings: createdRecording._id}}, {new: true});
+            await Guest.findByIdAndUpdate(user._id, {"$push": {recordings: new mongoose.Types.ObjectId(createdRecording._id)}}, {new: true});
         }
 
         return res
-        .status
+        .status(200)
         .json(
             {
                 statusCode: 200,
                 success: true,
-                message: "Recording created successfully."
+                message: "Recording saved successfully."
             }
         )
     } catch (error) {
-        throw new ApiError(501, "Something went wrong while saving recording.");
+        throw new ApiError(501, error?.message);
     }
-
 }
 
 const getAllRecordings = async (req, res, next) => {
@@ -115,7 +115,7 @@ const deleteRecording = async (req, res, next) => {
         )
     }
 
-    const deletedRecording = await Recording.findByIdAndDelete(id);
+    const deletedRecording = await Recording.findByIdAndDelete(id, {new: true});
 
     if(!deletedRecording){
         return res
@@ -129,7 +129,7 @@ const deleteRecording = async (req, res, next) => {
         )
     }
 
-    const updatedUser = await User.findByIdAndUpdate(user._id, {$pull: {recordings: mongoose.Types.ObjectId(deletedRecording._id)}}, {new: true});
+    const updatedUser = await User.findByIdAndUpdate(user._id, {$pull: {recordings: new mongoose.Types.ObjectId(deletedRecording._id)}}, {new: true});
 
     if(!updatedUser){
         return res
