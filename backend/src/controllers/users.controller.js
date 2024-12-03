@@ -107,20 +107,11 @@ const registerUser = async (req, res) => {
                 )
         }
 
-        const { accessToken, refreshToken } = await generateUserAccessAndRefreshTokens(createdUser._id);
-
-        const options = {
-            httpOnly: true,
-            secure: true
-        };
-
         return res.status(200)
-            .cookie("accessToken", accessToken, options)
-            .cookie("refreshToken", refreshToken, options)
             .json(
                 {
                     statusCode: 200,
-                    data: { user: createdUser, accessToken, refreshToken, isGuest: false },
+                    data: { user: createdUser},
                     message: "User Registered Successfully",
                     success: true
                 }
