@@ -266,7 +266,7 @@ const logoutUser = async (req, res, next) => {
             .clearCookie("refreshToken", options)
             .json({
                 statusCode: 200,
-                data: { userUpdate },
+                data: { user: userUpdate },
                 success: true,
                 message: "Logout Successful"
             });
