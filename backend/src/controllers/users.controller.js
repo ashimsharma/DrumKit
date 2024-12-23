@@ -413,7 +413,7 @@ const updatePassword = async (req, res, next) => {
             .status(200)
             .json({
                 statusCode: 200,
-                data: { updatedPasswordUser },
+                data: { user: updatedPasswordUser },
                 success: true,
                 message: "Password Update Successfull"
             })
@@ -431,7 +431,7 @@ const getUserDetails = async (req, res, next) => {
             .json(
                 {
                     statusCode: 200,
-                    data: { user: req.user, isGuest: req.isGuest },
+                    data: { user, isGuest: req.isGuest },
                     success: true,
                     message: "User details fetched successfully."
                 }
