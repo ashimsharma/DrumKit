@@ -5,9 +5,9 @@ import UserIcon from "../images/User-Icon.png";
 export default function NavBar() {
     return (
         <>
-            <nav className="bg-slate-800 text-white p-2 border-b-2 flex">
+            <nav className="bg-slate-800 text-white border-b-2 flex px-2">
                 <span>
-                    <img src={NavBarIcon} alt="Icon" className="h-16" />
+                    <img src={NavBarIcon} alt="Icon" className="h-14 m-1" />
                 </span>
 
                 <span className="flex items-center text-2xl">
@@ -21,8 +21,8 @@ export default function NavBar() {
                     </ul>
                 </span>
 
-                <span className="flex-grow flex justify-end">
-                    <img src={UserIcon} alt="User" className="h-14" />
+                <span className="flex-grow flex justify-end items-center">
+                    <img src={UserIcon} alt="User" className="h-10 cursor-pointer" />
                 </span>
             </nav>
         </>
