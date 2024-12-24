@@ -1,6 +1,7 @@
 import React from "react";
 import NavBarIcon from "../images/NavBar-Icon.png";
 import UserIcon from "../images/User-Icon.png";
+import { NavLink } from "react-router";
 
 export default function NavBar() {
     return (
@@ -16,8 +17,17 @@ export default function NavBar() {
 
                 <span className="basis-9/12 flex justify-center">
                     <ul className="flex items-center text-lg gap-6">
-                        <li className="hover:text-slate-400 hover:cursor-pointer">Home</li>
-                        <li className="hover:text-slate-400 hover:cursor-pointer">Recorded Sounds</li>
+                        <li>
+                            <NavLink to="/" className={({isActive}) => `hover:text-slate-300 hover:underline cursor-pointer ${isActive ? 'text-slate-200 underline' : ''}`}>
+                                Home
+                            </NavLink>
+                        </li>
+
+                        <li>
+                            <NavLink to="/recordings" className={({isActive}) => `hover:text-slate-200 hover:underline cursor-pointer ${isActive ? 'text-slate-300 underline' : ''}`}>
+                                Recorded Sounds
+                            </NavLink>
+                        </li>
                     </ul>
                 </span>
 
