@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import NavBarIcon from "../images/NavBar-Icon.png";
 import UserIcon from "../images/User-Icon.png";
 import { NavLink } from "react-router";
+import DropDown from "./DropDown.jsx";
 
 export default function NavBar() {
+    const [isOpen, setIsOpen] = useState(false);
+
     return (
         <>
             <nav className="bg-slate-800 text-white border-b-2 flex px-2">
@@ -32,7 +35,8 @@ export default function NavBar() {
                 </span>
 
                 <span className="flex-grow flex justify-end items-center">
-                    <img src={UserIcon} alt="User" className="h-10 cursor-pointer" />
+                    <img src={UserIcon} alt="User" className="h-12 w-12 cursor-pointer" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}/>
+                    <DropDown isOpen={isOpen}/>
                 </span>
             </nav>
         </>
