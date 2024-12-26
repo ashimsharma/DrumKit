@@ -9,7 +9,7 @@ export default function NavBar() {
 
     return (
         <>
-            <nav className="bg-slate-800 text-white border-b-2 flex px-2">
+            <nav className="bg-slate-800 text-white shadow-[0_-4px_10px_rgba(0,_0,_0,_0.4)] flex px-2">
                 <span>
                     <img src={NavBarIcon} alt="Icon" className="h-14 m-1" />
                 </span>

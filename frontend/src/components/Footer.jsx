@@ -12,7 +12,7 @@ export default function Footer() {
 
     return (
         <>
-            <footer className="text-white text-md p-4 bg-slate-800 flex">
+            <footer className="text-white text-md p-4 bg-slate-800 flex shadow-[0_-4px_10px_rgba(0,_0,_0,_0.4)]">
                 <span className="grid grid-cols-2 gap-6">
                     <Link to="https://github.com/ashimsharma" target="_blank">
                         <img src={GithubIcon} alt="Github Icon" className="h-6 w-6 invert cursor-pointer hover:shadow-lg transition-shadow duration-300" />
