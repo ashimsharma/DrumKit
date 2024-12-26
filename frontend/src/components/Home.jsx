@@ -16,12 +16,12 @@ export default function Home() {
         <>
 
             <HomeContext.Provider value={{ recordingStarted, setRecordingStarted, recordingEnded, setRecordingEnded, recordingName, setRecordingName, setShowNotification }}>
-                <main className="bg-gray-900 text-white p-4">
+                <main className={`bg-gray-900 text-white p-4 h-screen`}>
                     {showNotification.show && <PopUp message={showNotification.positiveMessage ? "Recording Saved Successfully." : "Recording not saved."} positiveMessage={showNotification.positiveMessage}/>}
                     <DrumKit />
                     <RecordToolBar />
                     {recordingEnded && <SaveRecording />}
-                </main >
+                </main>
             </HomeContext.Provider>
         </>
     );
