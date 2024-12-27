@@ -5,6 +5,7 @@ import { Link } from "react-router";
 
 export default function Footer() {
     const [currentYear, setCurrentYear] = useState();
+    
     useEffect(() => {
         const date = new Date();
         setCurrentYear(date.getFullYear());

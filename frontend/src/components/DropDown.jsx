@@ -5,7 +5,7 @@ export default function DropDown({isOpen}) {
 
     return (
         <div
-            className={`${(!isOpen && !hovered) ? "hidden" : "" } absolute right-2 top-12 mt-2 w-48 bg-slate-800 rounded-md text-white`} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+            className={`${(!isOpen && !hovered) ? "hidden" : "" } absolute right-2 top-12 mt-2 w-48 bg-slate-800 rounded-md text-white ring-2 ring-blue-500`} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
         >
             <div className="py-1" role="menu" aria-orientation="vertical">
                 <a
