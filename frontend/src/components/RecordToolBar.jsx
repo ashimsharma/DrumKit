@@ -8,7 +8,6 @@ export default function RecordToolBar() {
 
     const handleRecordClick = () => {
         if(recordingEnded){
-            console.log("Start, I returned from here.")
             return;
         }
         setRecordingStarted(true);
@@ -16,7 +15,6 @@ export default function RecordToolBar() {
 
     const handleStopClick = () => {
         if(!recordingStarted || recordingEnded){
-            console.log("Stop, I returned from here.")
             return;
         }
         setRecordingStarted(false);
