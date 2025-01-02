@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import NavBarIcon from "../images/NavBar-Icon.png";
 import UserIcon from "../images/User-Icon.png";
-import { NavLink } from "react-router";
+import { NavLink, useLocation } from "react-router";
 import DropDown from "./DropDown.jsx";
 
 export default function NavBar() {
     const [isOpen, setIsOpen] = useState(false);
+    const location = useLocation();
+    const isAuthPage = (location.pathname === '/signup') || (location.pathname === '/login');
 
     return (
         <>
-            <nav className="bg-slate-800 text-white shadow-[0_-4px_10px_rgba(0,_0,_0,_0.4)] flex px-2">
+            <nav className={`bg-slate-800 text-white shadow-[0_-4px_10px_rgba(0,_0,_0,_0.4)] flex px-2 ${isAuthPage && 'hidden'}`}>
                 <span>
                     <img src={NavBarIcon} alt="Icon" className="h-14 m-1" />
                 </span>
@@ -19,15 +21,15 @@ export default function NavBar() {
                 </span>
 
                 <span className="basis-9/12 flex justify-center">
-                    <ul className="flex items-center text-lg gap-6">
+                    <ul className="flex items-center text-lg gap-2">
                         <li>
-                            <NavLink to="/" className={({isActive}) => `hover:text-slate-300 hover:underline cursor-pointer ${isActive ? 'text-slate-200 underline' : ''}`}>
+                            <NavLink to="/" className={({isActive}) => `hover:border-b-[5px] hover:border-blue-800 cursor-pointer p-4 ${isActive ? 'border-b-[5px] border-blue-800' : ''}`}>
                                 Home
                             </NavLink>
                         </li>
 
                         <li>
-                            <NavLink to="/recordings" className={({isActive}) => `hover:text-slate-200 hover:underline cursor-pointer ${isActive ? 'text-slate-300 underline' : ''}`}>
+                            <NavLink to="/recordings" className={({isActive}) => `hover:border-b-[5px] hover:border-blue-800 cursor-pointer py-4 ${isActive ? 'border-b-[5px] border-blue-800' : ''}`}>
                                 Recorded Sounds
                             </NavLink>
                         </li>

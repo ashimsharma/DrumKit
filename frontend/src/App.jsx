@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router';
+import { BrowserRouter as Router, Routes, Route, useLocation, useLoaderData } from 'react-router';
 // Components
 import NavBar from "./components/NavBar.jsx";
 import Footer from './components/Footer.jsx';
@@ -6,24 +6,18 @@ import Home from './components/Home.jsx';
 import Recordings from './components/Recordings.jsx';
 import Login from './components/Login.jsx';
 import Signup from './components/Signup.jsx';
+import Layout from './components/Layout.jsx';
 
 function App() {
-  // const location = useLocation();
-  // console.log(location.pathname);
-  const location = window.location.pathname;
-  const isAuthPage = (location === "/login") || (location === "/signup");
-
   return (
     <>
       <Router>
-        {!isAuthPage && <NavBar />}
           <Routes>
-            <Route path='/' element={<Home/>} />
-            <Route path='/recordings' element={<Recordings/>} />
-            <Route path='/login' element={<Login/>}/>
-            <Route path='/signup' element={<Signup />}/>
+            <Route path='/' element={<Layout><Home /></Layout>} />
+            <Route path='/recordings' element={<Layout><Recordings /></Layout>} />
+            <Route path='/login' element={<Layout><Login /></Layout>}/>
+            <Route path='/signup' element={<Layout><Signup /></Layout>}/>
           </Routes>
-        {!isAuthPage && <Footer />}
       </Router>
     </>
   )

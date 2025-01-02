@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 // Todo: Separate User and Guest Verification Logic.
 const verifyJWT = async (req, res, next) => {
     try {
-        const token = req.cookies?.accessToken || req.headers("Authorization")?.replace("Bearer ", "");
+        const token = req.cookies?.accessToken || req.headers["Authorization"]?.replace("Bearer ", "");
 
         if (!token) {
             return res

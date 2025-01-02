@@ -9,7 +9,7 @@ const generateUserAccessAndRefreshTokens = async (id) => {
         const user = await User.findById(id);
 
         if (!user) {
-            throw new ApiError(401, "User not found");
+            throw new ApiError(401, "User not found.");
         }
 
         const accessToken = user.generateAccessToken();
@@ -69,7 +69,7 @@ const registerUser = async (req, res) => {
                     {
                         statusCode: 400,
                         success: false,
-                        message: "Invalid Credentials"
+                        message: "Invalid Credentials."
                     }
                 )
         }
@@ -183,7 +183,8 @@ const loginUser = async (req, res) => {
 
         const options = {
             httpOnly: true,
-            secure: true
+            secure: true,
+            sameSite: "none"
         };
 
         return res.status(200)

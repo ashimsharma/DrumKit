@@ -5,10 +5,16 @@ import { useNavigate } from "react-router";
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import { useForm } from "react-hook-form";
 import TypeAnimation from "./TypeAnimation.jsx";
+import axios from "axios";
+import PopUp from "./PopUp.jsx";
 
 export default function Login() {
     const navigate = useNavigate();
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [error, setError] = useState(false);
+    const [message, setMessage] = useState('Creating Account...');
+    const [show, setShow] = useState(false);
+
     const { register, handleSubmit, formState: { errors }, reset } = useForm({ mode: "onChange" });
 
     const togglePasswordVisibility = () => {
@@ -19,15 +25,43 @@ export default function Login() {
         navigate('/login')
     };
 
-    const signupUser = (data) => {
+    const signupUser = async (data) => {
         reset();
-        console.log(data);
+        setShow(true);
+        try {
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/users/signup`,
+                data
+            )
+
+            if(response){
+                setMessage(response.data.message);
+                setError(false);
+            }
+
+            setTimeout(() => {
+                setShow(false);
+                setMessage('Creating Account...');
+                navigate('/login');
+            }, 1500);
+
+        } catch (error) {
+            setMessage(error.response.data.message);
+            setError(true);
+            setTimeout(() => {
+                setShow(false);
+                setMessage('Creating Account...');
+            }, 3000);
+        }
     }
     return (
         <>
             <h1 className="absolute top-48 right-24 w-[590px] text-white font-bold text-[3.5rem] lg:hidden z-10">
                 Drum Kit 🥁 <TypeAnimation textSequence={['Create and Enjoy the soothing sounds', 5000, 'Create Account to Continue']}/>
             </h1>
+
+            {show && <PopUp positiveMessage={!error} message={message} />}
+
             <div className="grid grid-cols-2 bg-slate min-h-screen lg:block m-0 h-full min-w-screen w-full">
                 <div className="bg-slate-800 w-full h-full">
                     <div className="flex flex-row justify-start p-4 lg:justify-start">

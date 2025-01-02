@@ -5,11 +5,16 @@ import { useNavigate } from "react-router";
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import { useForm } from "react-hook-form";
 import TypeAnimation from "./TypeAnimation.jsx";
+import PopUp from "./PopUp.jsx";
+import axios from "axios";
 
 export default function Login() {
     const navigate = useNavigate();
     const [passwordVisible, setPasswordVisible] = useState(false);
     const { register, handleSubmit, formState: { errors }, reset } = useForm({ mode: "onChange" });
+    const [error, setError] = useState(false);
+    const [message, setMessage] = useState('Logging In...');
+    const [show, setShow] = useState(false);
 
     const togglePasswordVisibility = () => {
         setPasswordVisible((prev) => !prev);
@@ -19,15 +24,46 @@ export default function Login() {
         navigate('/signup')
     };
 
-    const loginUser = (data) => {
+    const loginUser = async (data) => {
         reset();
-        console.log(data);
+        setShow(true);
+        try {
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/users/login`,
+                data,
+                {
+                    withCredentials: true
+                }
+            )
+
+            if(response){
+                setMessage(response.data.message);
+                setError(false);
+            }
+
+            setTimeout(() => {
+                setShow(false);
+                setMessage('Logging In...');
+                navigate('/');
+            }, 1500);
+        } catch (error) {
+            setMessage(error.response.data.message);
+            setError(true);
+            setTimeout(() => {
+                setShow(false);
+                setMessage('Logging In...');
+            }, 1500);
+        }
     }
+
     return (
         <>
             <h1 className="absolute top-48 left-24 text-white font-bold text-[3.5rem] lg:hidden z-10">
                 Drum Kit 🥁<TypeAnimation textSequence={['Create and Enjoy the soothing sounds', 5000, 'Login to Continue']}/>
             </h1>
+
+            {show && <PopUp positiveMessage={!error} message={message} />}
+
             <div className="grid grid-cols-2 bg-slate min-h-screen lg:block m-0 h-full min-w-screen w-full">
                 <div className="lg:hidden">
                     <div className="absolute bg-gray-800 w-1/2 h-full blur-3xl opacity-70 lg:hidden"></div>
