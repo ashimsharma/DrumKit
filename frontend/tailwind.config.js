@@ -5,7 +5,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      boxShadow: {
+        'glow-green': '0 0 5px #39FF14, 0 0 10px #39FF14, 0 0 15px #39FF14', // Glow Green
+      },
+      textColor: {
+        'glow-green': '#39FF14',
+      },
+    },
     // Desktop-first approach
     screens: {
 			xl: { max: "1279px" },

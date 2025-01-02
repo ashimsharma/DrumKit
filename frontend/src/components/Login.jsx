@@ -4,6 +4,7 @@ import Drum from "../images/NavBar-Icon.png";
 import { useNavigate } from "react-router";
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import { useForm } from "react-hook-form";
+import TypeAnimation from "./TypeAnimation.jsx";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -24,7 +25,9 @@ export default function Login() {
     }
     return (
         <>
-            <h1 className="absolute top-10 left-4 text-white font-bold text-3xl lg:hidden z-10">Drum Kit Image</h1>
+            <h1 className="absolute top-48 left-24 text-white font-bold text-[3.5rem] lg:hidden z-10">
+                Drum Kit 🥁<TypeAnimation textSequence={['Create and Enjoy the soothing sounds', 5000, 'Login to Continue']}/>
+            </h1>
             <div className="grid grid-cols-2 bg-slate min-h-screen lg:block m-0 h-full min-w-screen w-full">
                 <div className="lg:hidden">
                     <div className="absolute bg-gray-800 w-1/2 h-full blur-3xl opacity-70 lg:hidden"></div>
@@ -34,7 +37,7 @@ export default function Login() {
                     <div className="flex flex-row justify-end p-4 lg:justify-start">
                         <img src={Drum} alt="Drum Logo" className="h-16" />
                     </div>
-                    <div className="p-16 lg:p-16">
+                    <div className="p-8 lg:p-16">
                         <h1 className="text-center text-white text-4xl font-bold py-8">Login</h1>
                         <form action="" onSubmit={handleSubmit(loginUser)}>
                             <input type="text" placeholder="Enter Your Email" className="bg-transparent border border-slate-400/50 rounded-lg px-4 py-2 w-full text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-500 backdrop-blur-sm my-4" {...register("email", { required: "All fields are required.", pattern: { value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: "Email in wrong format." } })} />

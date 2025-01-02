@@ -4,6 +4,7 @@ import Drum from "../images/NavBar-Icon.png";
 import { useNavigate } from "react-router";
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import { useForm } from "react-hook-form";
+import TypeAnimation from "./TypeAnimation.jsx";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -24,7 +25,9 @@ export default function Login() {
     }
     return (
         <>
-            <h1 className="absolute top-10 right-4 text-white font-bold text-3xl lg:hidden z-10">Drum Kit Image</h1>
+            <h1 className="absolute top-48 right-24 w-[590px] text-white font-bold text-[3.5rem] lg:hidden z-10">
+                Drum Kit 🥁 <TypeAnimation textSequence={['Create and Enjoy the soothing sounds', 5000, 'Create Account to Continue']}/>
+            </h1>
             <div className="grid grid-cols-2 bg-slate min-h-screen lg:block m-0 h-full min-w-screen w-full">
                 <div className="bg-slate-800 w-full h-full">
                     <div className="flex flex-row justify-start p-4 lg:justify-start">
