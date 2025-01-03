@@ -46,7 +46,7 @@ export default function Login() {
             }, 1500);
 
         } catch (error) {
-            setMessage(error.response.data.message);
+            setMessage(error.response?.data.message || 'Failed to connect to server. Try Again Later.');
             setError(true);
             setTimeout(() => {
                 setShow(false);

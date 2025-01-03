@@ -1,9 +1,8 @@
 import { useState, useRef } from "react";
-import DeleteIcon from "../images/icons/delete_icon.png";
-import PauseIcon from "../images/icons/pause_icon.png";
-import PlayIcon from "../images/icons/play_icon.png";
+import { FaPlay, FaPause } from "react-icons/fa";
+import {MdDelete} from "react-icons/md";
 
-export default function RecordingCard({recordingName, recordingData, key}){
+export default function RecordingCard({recordingName, recordingData}){
     let [played, setPlayed] = useState(false);
 
     const handlePlayOrPause = (e) => {
@@ -12,17 +11,17 @@ export default function RecordingCard({recordingName, recordingData, key}){
 
     return(
         <>
-            <div className="w-1/2 mx-auto bg-slate-600 p-2 px-4 rounded-lg my-2 ring-2 ring-blue-600 lg:w-3/4 flex" key={key}>
+            <div className="w-1/2 mx-auto bg-slate-600 p-2 px-4 rounded-lg my-6 ring-2 ring-blue-600 lg:w-3/4 flex">
                 <div className="basis-3/4 flex items-center">
-                    <p>Recording 1</p>
+                    <p>{recordingName}</p>
                 </div>
                 <div className="flex justify-end basis-1/4 gap-2">
-                    <div className="bg-blue-600 rounded-lg p-[3px] cursor-pointer hover:bg-blue-800 w-10 flex justify-center" onClick={(e) => handlePlayOrPause(e)}>
-                        <img src={!played ? PlayIcon : PauseIcon} alt="Play Icon" className="w-8" />
+                    <div className={`bg-blue-600 rounded-lg p-2 cursor-pointer hover:bg-blue-800 flex justify-center items-center`} onClick={(e) => handlePlayOrPause(e)}>
+                        {!played ? <FaPlay /> : <FaPause />}
                     </div>
                     
-                    <div className="bg-blue-600 rounded-lg p-[3px] flex items-center cursor-pointer hover:bg-blue-800 w-10 justify-center">
-                        <img src={DeleteIcon} alt="Play Icon" className="w-7 h-7 align-middle mix-blend-darken" />
+                    <div className="bg-red-600 rounded-lg p-2 flex items-center cursor-pointer hover:bg-red-800 justify-center">
+                        <MdDelete size={20} />
                     </div>
                 </div>
             </div>

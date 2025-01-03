@@ -6,17 +6,18 @@ import Home from './components/Home.jsx';
 import Recordings from './components/Recordings.jsx';
 import Login from './components/Login.jsx';
 import Signup from './components/Signup.jsx';
-import Layout from './components/Layout.jsx';
+import Profile from './components/Profile.jsx';
 
 function App() {
   return (
     <>
       <Router>
           <Routes>
-            <Route path='/' element={<Layout><Home /></Layout>} />
-            <Route path='/recordings' element={<Layout><Recordings /></Layout>} />
-            <Route path='/login' element={<Layout><Login /></Layout>}/>
-            <Route path='/signup' element={<Layout><Signup /></Layout>}/>
+            <Route path='/' element={<Home />} />
+            <Route path='/recordings' element={<Recordings />} />
+            <Route path='/login' element={<Login />}/>
+            <Route path='/signup' element={<Signup />}/>
+            <Route path='/profile' element={<Profile />} />
           </Routes>
       </Router>
     </>

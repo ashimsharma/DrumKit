@@ -4,6 +4,10 @@ import RecordToolBar from "./RecordToolBar.jsx";
 import SaveRecording from "./SaveRecording.jsx";
 import PopUp from "./PopUp.jsx";
 import axios from "axios";
+import NavBar from "./NavBar.jsx";
+import Footer from "./Footer.jsx";
+import { useNavigate } from "react-router";
+import Loader from "./Loader.jsx";
 
 export const HomeContext = createContext();
 
@@ -14,12 +18,39 @@ export default function Home() {
     const [recordingName, setRecordingName] = useState('');
     const [showNotification, setShowNotification] = useState({ show: false, positiveMessage: true, message: ''});
     const [soundArray, setSoundArray] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (recordingSaved) {
-            saveRecording();
-        }
+        (async () => {
+            const isAuthenticated = await checkIfAuthenticated();
+            if(isAuthenticated)
+                setLoading(false);
+
+            if (recordingSaved) 
+                saveRecording();
+        })();
     }, [recordingSaved]);
+
+    const checkIfAuthenticated = async () => {
+        try {
+            const response = await axios.get(
+                `${import.meta.env.VITE_API_URL}/users/check-auth`,
+                {
+                    withCredentials: true
+                }
+            )
+
+            if(response){
+                return true;
+            } else{
+                return false;
+            }
+        } catch (error) {
+            navigate("/login");
+            return false;
+        }
+    }
 
     const saveRecording = async () => {
         try {
@@ -52,14 +83,17 @@ export default function Home() {
     }
 
     return (
+        loading ? <Loader /> :
         <>
             <HomeContext.Provider value={{ recordingStarted, setRecordingStarted, recordingEnded, setRecordingEnded, recordingName, setRecordingName, setShowNotification, soundArray, setSoundArray, recordingSaved, setRecordingSaved }}>
+                <NavBar />
                 <main className={`bg-gray-900 text-white p-4 h-screen`}>
                     {showNotification.show && <PopUp message={showNotification.message} positiveMessage={showNotification.positiveMessage} />}
                     <DrumKit />
                     <RecordToolBar />
                     {recordingEnded && <SaveRecording />}
                 </main>
+                <Footer />
             </HomeContext.Provider>
         </>
     );
