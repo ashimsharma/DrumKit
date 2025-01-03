@@ -1,5 +1,5 @@
 import Router from "express";
-import { deleteUser, getUserDetails, loginUser, logoutGuest, logoutUser, registerGuest, registerUser, updateAccessToken, updatePassword, updateUser } from "../controllers/users.controller.js";
+import { deleteUser, getUserDetails, loginUser, logoutGuest, logoutUser, registerGuest, registerUser, updateAccessToken, updatePassword, updateUser, isAuthenticated } from "../controllers/users.controller.js";
 import verifyJWT from "../middlewares/auth.middleware.js";
 
 const userRouter = Router();
@@ -16,5 +16,9 @@ userRouter.route("/update-user").patch(verifyJWT, updateUser);
 userRouter.route("/update-password").patch(verifyJWT, updatePassword);
 userRouter.route("/get-user").get(verifyJWT, getUserDetails);
 userRouter.route("/delete-user").delete(verifyJWT, deleteUser);
+
+
+// Check Authentication Route
+userRouter.route("/check-auth").get(verifyJWT, isAuthenticated);
 
 export default userRouter;

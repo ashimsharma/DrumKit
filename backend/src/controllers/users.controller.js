@@ -4,6 +4,32 @@ import { ApiError } from "../utils/ApiError.js";
 import { validateEmail, validateName, validatePassword } from "../utils/Validation.js";
 import jwt, { decode } from "jsonwebtoken";
 
+const isAuthenticated = (req, res) => {
+    const user = req?.user;
+
+    if(!user){
+        return res
+        .status(401)
+        .json(
+            {
+                success: false,
+                statusCode: 401,
+                message: "Unauthorized Request"
+            }
+        )
+    }
+
+    return res
+    .status(200)
+    .json(
+        {
+            success: true,
+            statusCode: 200,
+            message: "Authorized User."
+        }
+    )
+}
+
 const generateUserAccessAndRefreshTokens = async (id) => {
     try {
         const user = await User.findById(id);
@@ -571,4 +597,4 @@ const updateAccessToken = async (req, res, next) => {
     });
 }
 
-export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser, updateAccessToken };
+export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser, updateAccessToken, isAuthenticated };

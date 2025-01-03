@@ -48,10 +48,10 @@ const verifyJWT = async (req, res, next) => {
             }
         }
 
-        let user = await User.findById(decodedToken._id).select("-password -refreshToken");
+        let user = await User.findById(decodedToken._id).select("-password -refreshToken -recordings");
 
         if (!user) {
-            user = await Guest.findById(decodedToken._id).select("-refreshToken");
+            user = await Guest.findById(decodedToken._id).select("-refreshToken -recordings");
 
             if (!user) {
                 return res
