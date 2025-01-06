@@ -12,7 +12,7 @@ export default function Profile() {
     const [loading, setLoading] = useState(true);
     const [userData, setUserData] = useState();
     const [showNotification, setShowNotification] = useState({ show: false, positiveMessage: true, message: ''});
-
+    
     useEffect(() => {
         (async () => {
             const isAuthenticated = await checkIfAuthenticated();
@@ -130,14 +130,14 @@ export default function Profile() {
                                 <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg mx-2">
                                     {`${userData.isGuest ? 'Register Account' : 'Edit Profile'}`}
                                 </button>
-                                <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg mx-2">
+                                {!userData.isGuest && <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg mx-2">
                                     Edit Password
-                                </button>
+                                </button>}
                             </div>
 
-                            {!userData.isGuest && <div className="mt-2 text-gray-500 mb-0">
+                            <div className="mt-2 text-gray-500 mb-0">
                                 <p className="mb-0 p-0">Member Since: {`${formatDate(userData.user.createdAt)}`}</p>
-                            </div>}
+                            </div>
                         </div>
                     </div>
                 </div>

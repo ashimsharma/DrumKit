@@ -10,9 +10,10 @@ import Loader from "./Loader.jsx";
 export const RecordingsContext = createContext();
 
 export default function(){
-    const [deletedRecordingId, setDeletedRecordingId] = useState(null);
     const [recordings, setRecordings] = useState([]);
+    const [recordingDatas, setRecordingDatas] = useState();
     const [showNotification, setShowNotification] = useState({ show: false, positiveMessage: true, message: ''});
+    const [playedSoundId, setPlayedSoundId] = useState(null);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
 
@@ -54,6 +55,10 @@ export default function(){
                 }
             )
             setRecordings(resposne.data.data.recordings);
+            setRecordingDatas(resposne.data.data.recordings.reduce((acc, obj) => {
+                acc[obj._id] = obj.recordedData;
+                return acc;
+            }, {}));
             setLoading(false);
             return;
         } catch (error) {
@@ -73,14 +78,14 @@ export default function(){
     
     return (
         loading ? <Loader /> : <>
-            <RecordingsContext.Provider value={{setDeletedRecordingId}}>
+            <RecordingsContext.Provider value={{recordingDatas, playedSoundId, setPlayedSoundId, setShowNotification}}>
                 {showNotification.show && <PopUp message={showNotification.message} positiveMessage={showNotification.positiveMessage} />}
                 <NavBar />
                 <div className="bg-gray-900 text-white h-screen">
                     <h1 className="text-center text-4xl p-4">Recordings</h1>
                     {recordings.map((recording) => {
                         return (
-                            <RecordingCard recordingName={recording.name} recordingData={recording.recordedData} key={recording._id} />
+                            <RecordingCard recordingName={recording.name} key={recording._id} id={recording._id} />
                         )
                     })}
                 </div>
