@@ -10,7 +10,7 @@ export default function Profile() {
     const prevLocation = useLocation().state?.from;
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
-    const [userData, setUserData] = useState();
+    const [userData, setUserData] = useState(null);
     const [showNotification, setShowNotification] = useState({ show: false, positiveMessage: true, message: ''});
     
     useEffect(() => {
@@ -99,21 +99,24 @@ export default function Profile() {
         return `${getOrdinalSuffix(day)} ${month}, ${year}`;
     }
 
+    const handleEditClick = () => {
+        if(!userData.isGuest){
+            navigate("/profile/update-profile");
+        }
+    }
+
     return (
         loading ? <Loader /> :
         <>
-            <div className="bg-gray-900 min-h-screen p-6">
+            <div className="bg-gray-900 min-h-screen p-4">
                 <div className="inline-flex text-gray-400 hover:text-gray-600 items-center cursor-pointer" onClick={backClick}>
-                    <IoChevronBackCircleSharp size={50}/>
+                    <IoChevronBackCircleSharp size={40}/>
                     <p className="p-2 text-xl">Back</p>
                 </div>
 
                 <div className="flex justify-center items-center m-8">
                     <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden w-full max-w-lg h-full">
                         <div className="relative h-48 bg-gray-800">
-                            <div className="absolute top-4 right-4 text-gray-400 text-2xl cursor-pointer hover:text-gray-600">
-                                <FaEdit />
-                            </div>
                             <img
                                 src={UserIcon}
                                 alt="Profile"
@@ -127,10 +130,10 @@ export default function Profile() {
                             <p className="text-gray-400 mt-2">{`${userData.isGuest ? 'Guest User' : 'Registered User'}`}</p>
 
                             <div className="mt-6">
-                                <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg mx-2">
+                                <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg mx-2" onClick={handleEditClick}>
                                     {`${userData.isGuest ? 'Register Account' : 'Edit Profile'}`}
                                 </button>
-                                {!userData.isGuest && <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg mx-2">
+                                {!userData.isGuest && <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg mx-2" onClick={() => navigate("/profile/update-password")}>
                                     Edit Password
                                 </button>}
                             </div>

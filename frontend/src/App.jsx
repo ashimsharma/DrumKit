@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, useLoaderData } from 'react-router';
 // Components
-import NavBar from "./components/NavBar.jsx";
-import Footer from './components/Footer.jsx';
 import Home from './components/Home.jsx';
 import Recordings from './components/Recordings.jsx';
 import Login from './components/Login.jsx';
 import Signup from './components/Signup.jsx';
 import Profile from './components/Profile.jsx';
+import UpdateProfile from './components/UpdateProfile.jsx';
+import UpdatePassword from './components/UpdatePassword.jsx';
 
 function App() {
   return (
@@ -18,6 +18,8 @@ function App() {
             <Route path='/login' element={<Login />}/>
             <Route path='/signup' element={<Signup />}/>
             <Route path='/profile' element={<Profile />} />
+            <Route path='/profile/update-profile' element={<UpdateProfile />} />
+            <Route path='/profile/update-password' element={<UpdatePassword />} />
           </Routes>
       </Router>
     </>
