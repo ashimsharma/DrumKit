@@ -348,11 +348,19 @@ const updateUser = async (req, res, next) => {
         if (
             [firstname, lastname, email].some((field) => field?.trim() === "")
         ) {
-            throw new ApiError(400, "All fields are required.");
+            return res.status(400).json({
+                statusCode: 400,
+                success: false,
+                message: "All fields are required.",
+            });
         }
 
         if (!(validateEmail(email) && validateName(firstname) && validateName(lastname))) {
-            throw new ApiError(400, "Invalid credentials.");
+            return res.status(400).json({
+                statusCode: 400,
+                success: false,
+                message: "Invalid Credentials.",
+            });
         }
 
         const userUpdate = await User.findByIdAndUpdate(
@@ -362,14 +370,18 @@ const updateUser = async (req, res, next) => {
         ).select("-password -refreshToken");
 
         if (!userUpdate) {
-            throw new ApiError(500, "Update Failed.");
+            return res.status(500).json({
+                statusCode: 500,
+                success: false,
+                message: "Update Failed.",
+            });
         }
 
         return res.status(200).json({
             statusCode: 200,
             data: { user: userUpdate },
             success: true,
-            message: "Update Successful",
+            message: "Update Successful.",
         });
     } catch (error) {
         throw new ApiError(500, error?.message || "Update Failed.");
