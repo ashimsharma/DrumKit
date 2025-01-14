@@ -81,10 +81,10 @@ export default function(){
 
     return (
         <>
-            <div className="grid grid-cols-5 w-1/2 h-1/2 m-auto my-10">
+            <div className="grid grid-cols-5 w-1/2 h-1/2 m-auto my-10 lg:w-full">
                 <div className="row-span-2 p-2 text-center flex flex-col justify-center items-center cursor-pointer">
                     {/* <h2 className="font-bold font-mono text-3xl p-4">J</h2> */}
-                    <img src={DrumKitSnare} alt="" className="h-full object-cover hover:brightness-125" onClick={(e) => playSound(e, 'j')}/>
+                    <img src={DrumKitSnare} alt="" className="h-full hover:brightness-125 lg:aspect-h-full" onClick={(e) => playSound(e, 'j')}/>
                 </div>
 
                 <div className="text-center p-2 max-h-full flex flex-col justify-center items-center cursor-pointer">

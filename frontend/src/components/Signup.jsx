@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DrumKitImage from "../images/DrumKit-Image.jpg";
 import Drum from "../images/NavBar-Icon.png";
 import { useNavigate } from "react-router";
@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import TypeAnimation from "./TypeAnimation.jsx";
 import axios from "axios";
 import PopUp from "./PopUp.jsx";
+import Loader from "./Loader.jsx";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -14,6 +15,37 @@ export default function Login() {
     const [error, setError] = useState(false);
     const [message, setMessage] = useState('Creating Account...');
     const [show, setShow] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        (async () => {
+            const isAuthenticated = await checkIfAuthenticated();
+            if(isAuthenticated){
+                navigate("/")
+            }
+            setLoading(false);
+        }
+        )();
+    }, []);
+
+    const checkIfAuthenticated = async () => {
+        try {
+            const response = await axios.get(
+                `${import.meta.env.VITE_API_URL}/users/check-auth`,
+                {
+                    withCredentials: true
+                }
+            )
+
+            if(response){
+                return true;
+            } else{
+                return false;
+            }
+        } catch (error) {
+            return false;
+        }
+    }
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({ mode: "onChange" });
 
@@ -55,6 +87,7 @@ export default function Login() {
         }
     }
     return (
+        loading ? <Loader /> :
         <>
             <h1 className="absolute top-48 right-24 w-[590px] text-white font-bold text-[3.5rem] lg:hidden z-10">
                 Drum Kit 🥁 <TypeAnimation textSequence={['Create and Enjoy the soothing sounds', 5000, 'Create Account to Continue']}/>

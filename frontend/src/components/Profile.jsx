@@ -38,7 +38,6 @@ export default function Profile() {
                 return false;
             }
         } catch (error) {
-            console.log(error);
             navigate("/login");
             return false;
         }
@@ -130,10 +129,10 @@ export default function Profile() {
                             <p className="text-gray-400 mt-2">{`${userData.isGuest ? 'Guest User' : 'Registered User'}`}</p>
 
                             <div className="mt-6">
-                                <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg mx-2" onClick={handleEditClick}>
+                                <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg mx-2 my-2" onClick={handleEditClick}>
                                     {`${userData.isGuest ? 'Register Account' : 'Edit Profile'}`}
                                 </button>
-                                {!userData.isGuest && <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg mx-2" onClick={() => navigate("/profile/update-password")}>
+                                {!userData.isGuest && <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg mx-2 my-2" onClick={() => navigate("/profile/update-password")}>
                                     Edit Password
                                 </button>}
                             </div>

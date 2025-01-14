@@ -22,7 +22,7 @@ export default function RecordToolBar() {
     }
 
     return (
-        <div className="w-1/6 mx-auto my-4 rounded-3xl bg-white bg-opacity-30 shadow-md shadow-slate-400 flex justify-center gap-3 items-center">
+        <div className="w-1/6 lg:w-1/2 mx-auto my-4 rounded-3xl bg-white bg-opacity-30 shadow-md shadow-slate-400 flex justify-center gap-3 items-center">
             <div>
                 <img src={RecordButton} alt="Record Button" title="Record" className={`w-10 ${recordingStarted && 'drop-shadow-2xl shadow-red-500'} ${recordingEnded && 'opacity-50'} cursor-pointer`} onClick={handleRecordClick} />
             </div>

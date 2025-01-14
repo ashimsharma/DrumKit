@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DrumKitImage from "../images/DrumKit-Image.jpg";
 import Drum from "../images/NavBar-Icon.png";
 import { useNavigate } from "react-router";
@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import TypeAnimation from "./TypeAnimation.jsx";
 import PopUp from "./PopUp.jsx";
 import axios from "axios";
+import Loader from "./Loader.jsx";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -15,6 +16,37 @@ export default function Login() {
     const [error, setError] = useState(false);
     const [message, setMessage] = useState('Logging In...');
     const [show, setShow] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        (async () => {
+            const isAuthenticated = await checkIfAuthenticated();
+            if(isAuthenticated){
+                navigate("/")
+            }
+            setLoading(false);
+        }
+        )();
+    }, []);
+
+    const checkIfAuthenticated = async () => {
+        try {
+            const response = await axios.get(
+                `${import.meta.env.VITE_API_URL}/users/check-auth`,
+                {
+                    withCredentials: true
+                }
+            )
+
+            if(response){
+                return true;
+            } else{
+                return false;
+            }
+        } catch (error) {
+            return false;
+        }
+    }
 
     const togglePasswordVisibility = () => {
         setPasswordVisible((prev) => !prev);
@@ -57,6 +89,7 @@ export default function Login() {
     }
 
     return (
+        loading ? <Loader /> :
         <>
             <h1 className="absolute top-48 left-24 text-white font-bold text-[3.5rem] lg:hidden z-10">
                 Drum Kit 🥁<TypeAnimation textSequence={['Create and Enjoy the soothing sounds', 5000, 'Login to Continue']}/>

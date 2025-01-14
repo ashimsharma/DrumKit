@@ -17,20 +17,20 @@ export default function Footer() {
     return (
         <>
             <footer className={`text-white text-md p-4 bg-slate-800 flex shadow-[0_-4px_10px_rgba(0,_0,_0,_0.4)] ${isAuthPage && 'hidden'}`}>
-                <span className="grid grid-cols-2 gap-6">
+                <span className="grid grid-cols-2 gap-6 lg:gap-2">
                     <Link to="https://github.com/ashimsharma" target="_blank">
-                        <div className="text-gray-400 text-3xl cursor-pointer hover:text-gray-600">
+                        <div className="text-gray-400 text-3xl lg:text-2xl cursor-pointer hover:text-gray-600">
                             <FaGithub />
                         </div>
                     </Link>
 
                     <Link to="https://linkedin.com/in/ashim-sharma7" target="_blank">
-                        <div className="text-gray-400 text-3xl cursor-pointer hover:text-gray-600">
+                        <div className="text-gray-400 text-3xl lg:text-2xl cursor-pointer hover:text-gray-600">
                             <FaLinkedin />
                         </div>
                     </Link>
                 </span>
-                <span className="flex-grow">
+                <span className="flex-grow lg:text-sm">
                     <p className="text-center">&copy; <span>{currentYear}</span> Ashim Sharma. All rights reserved.</p>
                 </span>
             </footer>
