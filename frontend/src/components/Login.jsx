@@ -88,6 +88,40 @@ export default function Login() {
         }
     }
 
+    const loginGuest = async () => {
+        setShow(true);
+        try {
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/users/register-guest`,
+                {},
+                {
+                    withCredentials: true
+                }
+            )
+
+            console.log(response);
+
+            if(response){
+                setMessage(response.data.message);
+                setError(false);
+            }
+
+            setTimeout(() => {
+                setShow(false);
+                setMessage('Logging In...');
+                navigate('/');
+            }, 1500);
+        } catch (error) {
+            console.log(error);
+            setMessage(error.response?.data.message || 'Failed to connect to server. Try Again Later.');
+            setError(true);
+            setTimeout(() => {
+                setShow(false);
+                setMessage('Logging In...');
+            }, 1500);
+        }
+    }
+
     return (
         loading ? <Loader /> :
         <>
@@ -133,7 +167,7 @@ export default function Login() {
                         
                         <h2 className="my-2 text-white text-center">OR</h2>
                         <div className="text-center">
-                            <button className="bg-emerald-500 hover:bg-emerald-700 p-2 rounded-lg text-white cursor-pointer w-3/4 mt-2">Login as guest</button>
+                            <button className="bg-emerald-500 hover:bg-emerald-700 p-2 rounded-lg text-white cursor-pointer w-3/4 mt-2" onClick={loginGuest}>Login as guest</button>
                         </div>
                         <p className="text-white text-center p-4 my-12">Dont't have an account? <button className="bg-none underline text-blue-700" onClick={navigateToSignup}>Create One</button></p>
                     </div>

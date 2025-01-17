@@ -11,11 +11,12 @@ import Tom2Sound from "../sounds/tom-2.mp3";
 import Tom3Sound from "../sounds/tom-3.mp3";
 import Tom4Sound from "../sounds/tom-4.mp3";
 import { RecordingsContext } from "./Recordings.jsx";
+import axios from "axios";
 
-export default function RecordingCard({recordingName, id}) {
+export default function RecordingCard({ recordingName, id }) {
     let [played, setPlayed] = useState(false);
     const playedBool = useRef(false);
-    const {recordingDatas, playedSoundId, setPlayedSoundId, setShowNotification} = useContext(RecordingsContext);
+    const { recordingDatas, playedSoundId, setPlayedSoundId, setShowNotification, setRecordingDeleted } = useContext(RecordingsContext);
 
     let soundPaths = {
         'a': Tom1Sound,
@@ -28,15 +29,15 @@ export default function RecordingCard({recordingName, id}) {
     }
 
     const showError = () => {
-        setShowNotification({show: true, positiveMessage: false, message: `Cannot play. A recording is already playing.`});
+        setShowNotification({ show: true, positiveMessage: false, message: `Cannot play. A recording is already playing.` });
 
         setTimeout(() => {
-            setShowNotification({show: false, positiveMessage: true, message: ''});
+            setShowNotification({ show: false, positiveMessage: true, message: '' });
         }, 3000);
     }
 
     const handlePlayOrPause = (e) => {
-        if(playedSoundId){
+        if (playedSoundId) {
             showError();
             return;
         }
@@ -48,7 +49,39 @@ export default function RecordingCard({recordingName, id}) {
         playRecording(e);
     }
 
-    async function playRecording(e) {
+    const deleteRecording = async (e) => {
+        try {
+            const response = await axios.delete(
+                `${import.meta.env.VITE_API_URL}/recordings/delete-recording`,
+                {
+                    data: {
+                        id
+                    },
+                    withCredentials: true // This should be inside the same config object
+                }
+            );
+
+            if (response) {
+                setRecordingDeleted(true);
+            }
+
+            console.log(response);
+
+            setShowNotification({ show: true, positiveMessage: false, message: `Recording Deleted Successfully.` });
+
+            setTimeout(() => {
+                setShowNotification({ show: false, positiveMessage: true, message: '' });
+            }, 3000);
+        } catch (error) {
+            setShowNotification({ show: true, positiveMessage: false, message: `Cannot Delete Recording.` });
+
+            setTimeout(() => {
+                setShowNotification({ show: false, positiveMessage: true, message: '' });
+            }, 3000);
+        }
+    }
+
+    const playRecording = async (e) => {
         updatePlay()
         let recordedSound = recordingDatas[id];
 
@@ -58,7 +91,7 @@ export default function RecordingCard({recordingName, id}) {
             // e.target.parentElement.previousSibling.classList.remove('visibility');
             playedBool.current && playSound(recordedSound[i][0]);
 
-            if(!playedBool.current) {
+            if (!playedBool.current) {
                 setPlayed(false);
                 return;
             };
@@ -74,7 +107,7 @@ export default function RecordingCard({recordingName, id}) {
         return audio.play();
     }
 
-    function delay(delayTime) {
+    const delay = (delayTime) => {
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve('Delay Done');
@@ -82,7 +115,7 @@ export default function RecordingCard({recordingName, id}) {
         })
     }
 
-    function updatePlay(){
+    const updatePlay = () => {
         playedBool.current = !playedBool.current;
     }
 
@@ -97,7 +130,7 @@ export default function RecordingCard({recordingName, id}) {
                         {!played ? <FaPlay /> : <FaPause />}
                     </div>
 
-                    <div className="bg-red-600 rounded-lg p-2 flex items-center cursor-pointer hover:bg-red-800 justify-center">
+                    <div className="bg-red-600 rounded-lg p-2 flex items-center cursor-pointer hover:bg-red-800 justify-center" onClick={(e) => deleteRecording(e)}>
                         <MdDelete size={20} />
                     </div>
                 </div>

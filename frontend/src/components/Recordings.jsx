@@ -11,9 +11,11 @@ export const RecordingsContext = createContext();
 
 export default function(){
     const [recordings, setRecordings] = useState([]);
-    const [recordingDatas, setRecordingDatas] = useState();
+    const [recordingDatas, setRecordingDatas] = useState({});
     const [showNotification, setShowNotification] = useState({ show: false, positiveMessage: true, message: ''});
     const [playedSoundId, setPlayedSoundId] = useState(null);
+    const [recordingDeleted, setRecordingDeleted] = useState(false);
+
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
 
@@ -23,8 +25,10 @@ export default function(){
 
             if(isAuthenticated)
                 getRecordings();
+
+            setRecordingDeleted(false);
         })();
-    }, [])
+    }, [recordingDeleted])
 
     const checkIfAuthenticated = async () => {
         try {
@@ -78,7 +82,7 @@ export default function(){
     
     return (
         loading ? <Loader /> : <>
-            <RecordingsContext.Provider value={{recordingDatas, playedSoundId, setPlayedSoundId, setShowNotification}}>
+            <RecordingsContext.Provider value={{recordingDatas, playedSoundId, setPlayedSoundId, setShowNotification, setRecordingDeleted}}>
                 {showNotification.show && <PopUp message={showNotification.message} positiveMessage={showNotification.positiveMessage} />}
                 <NavBar />
                 <div className="bg-gray-900 text-white h-screen">
