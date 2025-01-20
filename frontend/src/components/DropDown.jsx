@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import PopUp from "./PopUp.jsx";
 import { useLocation, useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 
 export default function DropDown({ isOpen }) {
     const [hovered, setHovered] = useState(false);
@@ -10,7 +11,8 @@ export default function DropDown({ isOpen }) {
     const [positive, setPositive] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
-
+    const isGuest = useSelector(state => state.userType.isGuest);
+    
     const logoutUser = async (e) => {
         e.preventDefault();
         setShow(true);
@@ -18,9 +20,14 @@ export default function DropDown({ isOpen }) {
         setPositive(true);
 
         try {
-            const response = await axios.post(
+            const response = !isGuest ? await axios.post(
                 `${import.meta.env.VITE_API_URL}/users/logout-user`,
                 {},
+                {
+                    withCredentials: true
+                }
+            ) : await axios.delete(
+                `${import.meta.env.VITE_API_URL}/users/logout-guest`,
                 {
                     withCredentials: true
                 }

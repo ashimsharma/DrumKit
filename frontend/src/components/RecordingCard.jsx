@@ -57,7 +57,7 @@ export default function RecordingCard({ recordingName, id }) {
                     data: {
                         id
                     },
-                    withCredentials: true // This should be inside the same config object
+                    withCredentials: true 
                 }
             );
 
@@ -73,6 +73,7 @@ export default function RecordingCard({ recordingName, id }) {
                 setShowNotification({ show: false, positiveMessage: true, message: '' });
             }, 3000);
         } catch (error) {
+            console.log(error?.message);
             setShowNotification({ show: true, positiveMessage: false, message: `Cannot Delete Recording.` });
 
             setTimeout(() => {

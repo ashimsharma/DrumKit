@@ -8,10 +8,13 @@ import NavBar from "./NavBar.jsx";
 import Footer from "./Footer.jsx";
 import { useNavigate } from "react-router";
 import Loader from "./Loader.jsx";
+import { useDispatch } from "react-redux";
+import { set } from "../redux/userSlice.js";
 
 export const HomeContext = createContext();
 
 export default function Home() {
+    const dispatch = useDispatch();
     const [recordingStarted, setRecordingStarted] = useState(false);
     const [recordingEnded, setRecordingEnded] = useState(false);
     const [recordingSaved, setRecordingSaved] = useState(false);
@@ -42,6 +45,7 @@ export default function Home() {
             )
 
             if(response){
+                dispatch(set(response.data.data.isGuest));
                 return true;
             } else{
                 return false;

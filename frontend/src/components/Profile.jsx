@@ -6,12 +6,6 @@ import Loader from "./Loader";
 import axios from "axios";
 
 export default function Profile() {
-    const prevLocation = useLocation().state?.from;
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
-    const [userData, setUserData] = useState(null);
-    const [showNotification, setShowNotification] = useState({ show: false, positiveMessage: true, message: ''});
-    
     useEffect(() => {
         (async () => {
             const isAuthenticated = await checkIfAuthenticated();
@@ -21,6 +15,12 @@ export default function Profile() {
         }
         )();
     }, []);
+    
+    const prevLocation = useLocation().state?.from;
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    const [userData, setUserData] = useState(null);
+    const [showNotification, setShowNotification] = useState({ show: false, positiveMessage: true, message: ''});
 
     const checkIfAuthenticated = async () => {
         try {
