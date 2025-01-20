@@ -7,6 +7,7 @@ import Signup from './components/Signup.jsx';
 import Profile from './components/Profile.jsx';
 import UpdateProfile from './components/UpdateProfile.jsx';
 import UpdatePassword from './components/UpdatePassword.jsx';
+import RegisterGuest from './components/RegisterGuest.jsx';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path='/profile' element={<Profile />} />
             <Route path='/profile/update-profile' element={<UpdateProfile />} />
             <Route path='/profile/update-password' element={<UpdatePassword />} />
+            <Route path='/profile/register-guest' element={<RegisterGuest />} />
           </Routes>
       </Router>
     </>

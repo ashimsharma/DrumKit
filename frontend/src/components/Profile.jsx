@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {  useLocation, useNavigate } from "react-router";
 import UserIcon from "../images/User-Icon.png";
-import { FaEdit } from 'react-icons/fa'
 import { IoChevronBackCircleSharp } from "react-icons/io5";
 import Loader from "./Loader";
 import axios from "axios";
@@ -102,11 +101,15 @@ export default function Profile() {
         if(!userData.isGuest){
             navigate("/profile/update-profile");
         }
+        else{
+            navigate("/profile/register-guest");
+        }
     }
 
     return (
         loading ? <Loader /> :
         <>
+            {showNotification.show && <PopUp message={showNotification.message} positiveMessage={showNotification.positiveMessage} />}
             <div className="bg-gray-900 min-h-screen p-4">
                 <div className="inline-flex text-gray-400 hover:text-gray-600 items-center cursor-pointer" onClick={backClick}>
                     <IoChevronBackCircleSharp size={40}/>
@@ -124,8 +127,8 @@ export default function Profile() {
                         </div>
 
                         <div className="text-center py-6 px-4">
-                            <h1 className="text-3xl font-bold text-white">{`${userData.user.firstname} ${userData.user.lastname}`}</h1>
-                            <p className="text-lg mt-2 text-gray-300">{`${userData.user.email}`}</p>
+                            <h1 className="text-3xl font-bold text-white">{userData.isGuest ? `${userData.user.name}`: `${userData.user.firstname} ${userData.user.lastname}`}</h1>
+                            <p className="text-lg mt-2 text-gray-300">{userData.isGuest ? `` : `${userData.user.email}`}</p>
                             <p className="text-gray-400 mt-2">{`${userData.isGuest ? 'Guest User' : 'Registered User'}`}</p>
 
                             <div className="mt-6">

@@ -10,7 +10,15 @@ const saveRecording = async (req, res, next) => {
         const isGuest = req.isGuest;
 
         if(!user){
-            throw new ApiError(401, "Unauthorized Request.")
+            return res
+            .status(401)
+            .json(
+                {
+                    statusCode: 401,
+                    success: false,
+                    message: "Unauthorized Request."
+                }
+            )
         }
         
         const {name, recordedData} = req.body;
@@ -138,7 +146,7 @@ const deleteRecording = async (req, res, next) => {
             {
                 statusCode: 500,
                 success: false,
-                message: "Something went wrong while updating user"
+                message: "Something went wrong while updating user."
             }
         )
     }
