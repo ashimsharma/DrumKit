@@ -25,7 +25,8 @@ const isAuthenticated = (req, res) => {
         {
             success: true,
             statusCode: 200,
-            message: "Authorized User."
+            message: "Authorized User.",
+            data: {isGuest: req?.isGuest}
         }
     )
 }
@@ -299,7 +300,7 @@ const logoutUser = async (req, res, next) => {
             });
     } catch (error) {
         // Handle errors, if any
-        throw new ApiError(500, error?.message || "Logout Failed.");
+        throw new ApiError(500, error?.message);
     }
 };
 
@@ -336,7 +337,7 @@ const logoutGuest = async (req, res, next) => {
                 message: "Logout Successfull"
             })
     } catch (error) {
-        throw new ApiError(500, error?.message || "Logout Failed.");
+        throw new ApiError(500, error?.message);
     }
 }
 
