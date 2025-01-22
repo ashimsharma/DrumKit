@@ -7,7 +7,6 @@ import Hamburger from "./Hamburger.jsx";
 
 export default function NavBar() {
     const [isOpen, setIsOpen] = useState(false);
-    const location = useLocation();
     const isAuthPage = (location.pathname === '/signup') || (location.pathname === '/login');
 
     return (

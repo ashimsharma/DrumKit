@@ -8,23 +8,27 @@ import Profile from './components/Profile.jsx';
 import UpdateProfile from './components/UpdateProfile.jsx';
 import UpdatePassword from './components/UpdatePassword.jsx';
 import RegisterGuest from './components/RegisterGuest.jsx';
+import { Provider } from 'react-redux';
+import store from './redux/store.js';
 
 function App() {
   return (
-    <>
-      <Router>
+    <Provider store={store}>
+      <>
+        <Router>
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/recordings' element={<Recordings />} />
-            <Route path='/login' element={<Login />}/>
-            <Route path='/signup' element={<Signup />}/>
+            <Route path='/login' element={<Login />} />
+            <Route path='/signup' element={<Signup />} />
             <Route path='/profile' element={<Profile />} />
             <Route path='/profile/update-profile' element={<UpdateProfile />} />
             <Route path='/profile/update-password' element={<UpdatePassword />} />
             <Route path='/profile/register-guest' element={<RegisterGuest />} />
           </Routes>
-      </Router>
-    </>
+        </Router>
+      </>
+    </Provider>
   )
 }
 
