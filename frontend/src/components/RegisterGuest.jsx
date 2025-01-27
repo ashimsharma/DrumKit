@@ -39,7 +39,7 @@ export default function RegisterGuest() {
         setLoading(true);
         try {
             const response = await axios.post(
-                `${import.meta.env.VITE_API_URL}/users/register-guest`,
+                `${import.meta.env.VITE_API_URL}/users/convert-guest`,
                 data,
                 { withCredentials: true }
             );
@@ -47,16 +47,16 @@ export default function RegisterGuest() {
             if (response) {
                 setMessage(response.data.message);
                 setError(false);
+                navigate('/login');
             }
 
             setTimeout(() => {
                 setShow(false);
                 setMessage('Creating Account...');
-                navigate('/');
             }, 1500);
 
         } catch (error) {
-            setMessage(error.response?.data.message || 'Failed to connect to server. Try Again Later.');
+            setMessage(error.response?.data.message);
             setError(true);
             setTimeout(() => {
                 setShow(false);

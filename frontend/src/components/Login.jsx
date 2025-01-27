@@ -99,8 +99,6 @@ export default function Login() {
                 }
             )
 
-            console.log(response);
-
             if(response){
                 setMessage(response.data.message);
                 setError(false);
@@ -109,13 +107,14 @@ export default function Login() {
             setTimeout(() => {
                 setShow(false);
                 setMessage('Logging In...');
+                setError(false);
                 navigate('/');
             }, 1500);
         } catch (error) {
-            console.log(error);
             setMessage(error.response?.data.message || 'Failed to connect to server. Try Again Later.');
             setError(true);
             setTimeout(() => {
+                setError(false)
                 setShow(false);
                 setMessage('Logging In...');
             }, 1500);
