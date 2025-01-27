@@ -1,4 +1,5 @@
 import { Guest } from "../models/guests.model.js";
+import { Recording } from "../models/recordings.model.js";
 import { User } from "../models/users.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { validateEmail, validateName, validatePassword } from "../utils/Validation.js";
@@ -269,11 +270,115 @@ const registerGuest = async (req, res, next) => {
     }
 }
 
+const convertGuestAccount = async (req, res) => {
+    try {
+        const user = req?.user;
+
+        const { email, firstname, lastname, password } = req?.body;
+
+        if (
+            [firstname, lastname, email].some((field) => field?.trim() === "")
+        ) {
+            return res
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "All fields are required."
+                    }
+                )
+        }
+
+        if (!(validateEmail(email) && validateName(firstname) && validateName(lastname) && validatePassword(password))) {
+            return res
+                .status(400)
+                .json(
+                    {
+                        statusCode: 400,
+                        success: false,
+                        message: "Invalid Credentials."
+                    }
+                )
+        }
+
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+            return res
+                .status(409)
+                .json(
+                    {
+                        statusCode: 409,
+                        success: false,
+                        message: "User with email already exists."
+                    }
+                )
+        }
+
+        const createUser = await User.create({ firstname, lastname, email, password });
+
+        const createdUser = await User.findById(createUser._id).select(
+            "-password -refreshToken -updatedAt -recordings"
+        )
+
+        if (!createdUser) {
+            return res
+                .status(501)
+                .json(
+                    {
+                        statusCode: 501,
+                        success: false,
+                        message: "Something went wrong while saving the user."
+                    }
+                )
+        }
+
+        const guestRecordings = await Guest.findById(user._id).select(
+            "+recordings"
+        );
+
+        // Update owner type of recordings 
+        const updateOwner = await Recording.updateMany({owner: user._id}, {owner: createdUser._id, ownerType: "User"});
+
+        const updateCreatedUserRecordings = await User.findByIdAndUpdate(createdUser._id, {recordings: guestRecordings});
+
+        const deleteGuest = await Guest.findByIdAndDelete(user._id);
+
+        if(!deleteGuest){
+            return res.
+            status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Something went wrong while saving the user."
+                }
+            )
+        }
+
+        const options = { httpOnly: true, secure: true };
+
+        return res
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(
+            {
+                statusCode: 200,
+                success: true,
+                message: "Guest Account Converted Successfully."
+            }
+        )
+    } catch (error) {
+        throw new ApiError(500, error?.message);
+    }
+}
+
 const logoutUser = async (req, res, next) => {
     try {
         const user = req?.user;
 
-        // Set refreshToken to null in the database
         const userUpdate = await User.findByIdAndUpdate(
             user._id,
             { $set: { refreshToken: null } },
@@ -610,4 +715,4 @@ const updateAccessToken = async (req, res, next) => {
     });
 }
 
-export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser, updateAccessToken, isAuthenticated };
+export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser, updateAccessToken, isAuthenticated, convertGuestAccount };
