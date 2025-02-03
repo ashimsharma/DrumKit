@@ -140,10 +140,10 @@ const deleteRecording = async (req, res, next) => {
     let updatedUser;
     
     if (!req?.isGuest) {
-        updatedUser = await User.findByIdAndUpdate(user._id, {$pull: {recordings: new mongoose.Types.ObjectId(deletedRecording._id)}}, {new: true});
+        updatedUser = await User.findByIdAndUpdate(user._id, {$pull: {recordings: deletedRecording._id}}, {new: true});
     }
     else{
-        updatedUser = await Guest.findByIdAndUpdate(user._id, {$pull: {recordings: new mongoose.Types.ObjectId(deletedRecording._id)}}, {new: true});
+        updatedUser = await Guest.findByIdAndUpdate(user._id, {$pull: {recordings: deletedRecording._id}}, {new: true});
     }
 
     if(!updatedUser){
