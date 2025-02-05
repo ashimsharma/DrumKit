@@ -8,28 +8,28 @@ import jwt, { decode } from "jsonwebtoken";
 const isAuthenticated = (req, res) => {
     const user = req?.user;
 
-    if(!user){
+    if (!user) {
         return res
-        .status(401)
-        .json(
-            {
-                success: false,
-                statusCode: 401,
-                message: "Unauthorized Request"
-            }
-        )
+            .status(401)
+            .json(
+                {
+                    success: false,
+                    statusCode: 401,
+                    message: "Unauthorized Request"
+                }
+            )
     }
 
     return res
-    .status(200)
-    .json(
-        {
-            success: true,
-            statusCode: 200,
-            message: "Authorized User.",
-            data: {isGuest: req?.isGuest}
-        }
-    )
+        .status(200)
+        .json(
+            {
+                success: true,
+                statusCode: 200,
+                message: "Authorized User.",
+                data: { isGuest: req?.isGuest }
+            }
+        )
 }
 
 const generateUserAccessAndRefreshTokens = async (id) => {
@@ -139,7 +139,7 @@ const registerUser = async (req, res) => {
             .json(
                 {
                     statusCode: 200,
-                    data: { user: createdUser},
+                    data: { user: createdUser },
                     message: "User Registered Successfully",
                     success: true
                 }
@@ -339,37 +339,37 @@ const convertGuestAccount = async (req, res) => {
         );
 
         // Update owner type of recordings 
-        const updateOwner = await Recording.updateMany({owner: user._id}, {owner: createdUser._id, ownerType: "User"});
+        const updateOwner = await Recording.updateMany({ owner: user._id }, { owner: createdUser._id, ownerType: "User" });
 
-        const updateCreatedUserRecordings = await User.findByIdAndUpdate(createdUser._id, {recordings: guestRecordings});
+        const updateCreatedUserRecordings = await User.findByIdAndUpdate(createdUser._id, { recordings: guestRecordings });
 
         const deleteGuest = await Guest.findByIdAndDelete(user._id);
 
-        if(!deleteGuest){
+        if (!deleteGuest) {
             return res.
-            status(501)
-            .json(
-                {
-                    statusCode: 501,
-                    success: false,
-                    message: "Something went wrong while saving the user."
-                }
-            )
+                status(501)
+                .json(
+                    {
+                        statusCode: 501,
+                        success: false,
+                        message: "Something went wrong while saving the user."
+                    }
+                )
         }
 
         const options = { httpOnly: true, secure: true };
 
         return res
-        .status(200)
-        .clearCookie("accessToken", options)
-        .clearCookie("refreshToken", options)
-        .json(
-            {
-                statusCode: 200,
-                success: true,
-                message: "Guest Account Converted Successfully."
-            }
-        )
+            .status(200)
+            .clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options)
+            .json(
+                {
+                    statusCode: 200,
+                    success: true,
+                    message: "Guest Account Converted Successfully."
+                }
+            )
     } catch (error) {
         throw new ApiError(500, error?.message);
     }
@@ -625,21 +625,8 @@ const deleteUser = async (req, res, next) => {
 }
 
 const updateAccessToken = async (req, res, next) => {
-    const { token, isGuest } = req.body;
+    const token = req.cookies?.refreshToken || req.headers["Authorization"]?.replace("Bearer ", "");
 
-    if (!token) {
-        return res
-            .status(401)
-            .json(
-                {
-                    statusCode: 401,
-                    success: false,
-                    message: "Access Token is required."
-                }
-            );
-    }
-
-    //Todo: Remove Code Duplication.(modularise)
     jwt.verify(token, process.env.USER_REFRESH_TOKEN_SECRET, async (err, decoded) => {
         if (err) {
             jwt.verify(token, process.env.GUEST_REFRESH_TOKEN_SECRET, async (err, decoded) => {
@@ -650,7 +637,7 @@ const updateAccessToken = async (req, res, next) => {
                             {
                                 statusCode: 401,
                                 success: false,
-                                message: "Invalid Access Token."
+                                message: "Invalid Refresh Token."
                             }
                         )
                 }
@@ -669,14 +656,14 @@ const updateAccessToken = async (req, res, next) => {
                         )
                 }
 
-                const accessToken = guestUser.generateAccessToken();
+                const accessToken = await guestUser.generateAccessToken();
 
                 return res
                     .status(200)
                     .cookie("accessToken", accessToken)
                     .json(
                         {
-                            data: { accessToken },
+                            data: { accessToken, isGuest: true },
                             statusCode: 200,
                             success: true,
                             message: "Access Token Updated."
@@ -684,34 +671,35 @@ const updateAccessToken = async (req, res, next) => {
                     )
             })
         }
+        else {
+            const user = await User.findById(decoded._id);
 
-        const user = await User.findById(decoded._id);
+            if (!user) {
+                return res
+                    .status(404)
+                    .json(
+                        {
+                            statusCode: 404,
+                            success: false,
+                            message: "User not found."
+                        }
+                    )
+            }
 
-        if (!user) {
+            const accessToken = await user.generateAccessToken();
+
             return res
-                .status(404)
+                .status(200)
+                .cookie("accessToken", accessToken)
                 .json(
                     {
-                        statusCode: 404,
-                        success: false,
-                        message: "User not found."
+                        data: { accessToken, isGuest: false },
+                        statusCode: 200,
+                        success: true,
+                        message: "Access Token Updated."
                     }
                 )
         }
-
-        const accessToken = user.generateAccessToken();
-
-        return res
-            .status(200)
-            .cookie("accessToken", accessToken)
-            .json(
-                {
-                    data: { accessToken },
-                    statusCode: 200,
-                    success: true,
-                    message: "Access Token Updated."
-                }
-            )
     });
 }
 
