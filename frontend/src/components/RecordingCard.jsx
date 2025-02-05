@@ -65,8 +65,6 @@ export default function RecordingCard({ recordingName, id }) {
                 setRecordingDeleted(true);
             }
 
-            console.log(response);
-
             setShowNotification({ show: true, positiveMessage: false, message: `Recording Deleted Successfully.` });
 
             setTimeout(() => {

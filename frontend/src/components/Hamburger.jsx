@@ -35,8 +35,6 @@ export default function Hamburger() {
                 }
             );
 
-            console.log(response);
-
             if (response) {
                 navigate("/login");
                 setShow(false);

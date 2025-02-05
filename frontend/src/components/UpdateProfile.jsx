@@ -5,14 +5,22 @@ import { useNavigate, Link } from "react-router-dom";
 import { IoChevronBackCircleSharp } from "react-icons/io5"; // Import the icon
 import Loader from "./Loader.jsx"; // Import your Loader component
 import PopUp from "./PopUp.jsx";
+import { useDispatch } from "react-redux";
+import { set } from "../redux/userSlice.js";
+import { checkIfAuthenticated } from "../../utils/index.js";
 
 export default function UpdateProfile() {
+    const dispatch = useDispatch();
+
     useEffect(() => {
         (async () => {
             const isAuthenticated = await checkIfAuthenticated();
             if (isAuthenticated) {
                 setLoading(false);
                 await getProfile();
+            }
+            else{
+                navigate("/");
             }
         })();
     }, []);
@@ -33,23 +41,6 @@ export default function UpdateProfile() {
     );
 
     const navigate = useNavigate();
-
-    const checkIfAuthenticated = async () => {
-        try {
-            const response = await axios.get(
-                `${import.meta.env.VITE_API_URL}/users/check-auth`,
-                {
-                    withCredentials: true,
-                }
-            );
-
-            return !!response; // Return true if response exists
-        } catch (error) {
-            console.log(error);
-            navigate("/login");
-            return false;
-        }
-    };
 
     const backClick = () => {
         navigate("/profile"); // Navigate to the previous page

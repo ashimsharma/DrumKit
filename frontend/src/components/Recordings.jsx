@@ -6,25 +6,44 @@ import { useNavigate } from "react-router";
 import NavBar from "./NavBar.jsx";
 import Footer from "./Footer.jsx";
 import Loader from "./Loader.jsx";
+import { useDispatch } from "react-redux";
+import { refreshAccessToken, checkIfAuthenticated } from "../../utils/index.js";
+import { set } from "../redux/userSlice.js";
 
 export const RecordingsContext = createContext();
 
-export default function(){
+export default function () {
     const [recordings, setRecordings] = useState([]);
     const [recordingDatas, setRecordingDatas] = useState({});
-    const [showNotification, setShowNotification] = useState({ show: false, positiveMessage: true, message: ''});
+    const [showNotification, setShowNotification] = useState({ show: false, positiveMessage: true, message: '' });
     const [playedSoundId, setPlayedSoundId] = useState(null);
     const [recordingDeleted, setRecordingDeleted] = useState(false);
 
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
 
+    const dispatch = useDispatch();
+
     useEffect(() => {
         (async () => {
             const isAuthenticated = await checkIfAuthenticated();
 
-            if(isAuthenticated)
+            if (isAuthenticated) {
                 getRecordings();
+                dispatch(set(isAuthenticated.data.data.isGuest));
+            }
+            else {
+                const accessTokenRefresh = await refreshAccessToken();
+
+                if (accessTokenRefresh) {
+                    dispatch(set(accessTokenRefresh.data.data.isGuest));
+                    await getRecordings();
+                    setLoading(false);
+                }
+                else {
+                    navigate("/login");
+                }
+            }
 
             setRecordingDeleted(false);
         })();
@@ -39,13 +58,12 @@ export default function(){
                 }
             )
 
-            if(response){
+            if (response) {
                 return true;
-            } else{
+            } else {
                 return false;
             }
         } catch (error) {
-            navigate("/login");
             return false;
         }
     }
@@ -66,23 +84,23 @@ export default function(){
             setLoading(false);
             return;
         } catch (error) {
-            if(!error['response']) {
+            if (!error['response']) {
                 navigate("/login");
                 return;
             };
 
-            setShowNotification({ show: true, positiveMessage: false, message: 'Failed to fetch Recordings.'});
+            setShowNotification({ show: true, positiveMessage: false, message: 'Failed to fetch Recordings.' });
             setTimeout(() => {
-                setShowNotification({ show: false, positiveMessage: true, message: ''});
+                setShowNotification({ show: false, positiveMessage: true, message: '' });
             }, 3000);
             setLoading(false);
             return;
         }
     }
-    
+
     return (
         loading ? <Loader /> : <>
-            <RecordingsContext.Provider value={{recordingDatas, playedSoundId, setPlayedSoundId, setShowNotification, setRecordingDeleted}}>
+            <RecordingsContext.Provider value={{ recordingDatas, playedSoundId, setPlayedSoundId, setShowNotification, setRecordingDeleted }}>
                 {showNotification.show && <PopUp message={showNotification.message} positiveMessage={showNotification.positiveMessage} />}
                 <NavBar />
                 <div className="bg-gray-900 text-white h-screen">

@@ -5,13 +5,21 @@ import { useNavigate } from "react-router-dom";
 import { IoChevronBackCircleSharp, IoEye, IoEyeOff } from "react-icons/io5"; // Import show/hide icons
 import Loader from "./Loader.jsx"; // Import your Loader component
 import PopUp from "./PopUp.jsx";
+import { useDispatch } from "react-redux";
+import { set } from "../redux/userSlice.js";
+import { checkIfAuthenticated } from "../../utils/index.js";
 
 export default function UpdatePassword() {
+    const dispatch = useDispatch();
+
     useEffect(() => {
         (async () => {
             const isAuthenticated = await checkIfAuthenticated();
             if (isAuthenticated) {
                 setLoading(false);
+            }
+            else{
+                navigate("/");
             }
         })();
     }, []);
@@ -31,23 +39,6 @@ export default function UpdatePassword() {
     });
 
     const navigate = useNavigate();
-
-    const checkIfAuthenticated = async () => {
-        try {
-            const response = await axios.get(
-                `${import.meta.env.VITE_API_URL}/users/check-auth`,
-                {
-                    withCredentials: true,
-                }
-            );
-
-            return !!response; // Return true if response exists
-        } catch (error) {
-            console.log(error);
-            navigate("/login");
-            return false;
-        }
-    };
 
     const backClick = () => {
         navigate("/profile"); // Navigate to the previous page
@@ -115,7 +106,7 @@ export default function UpdatePassword() {
                             type={showOldPassword ? "text" : "password"}
                             placeholder="Enter Your Old Password"
                             className="bg-transparent border border-slate-400/50 rounded-lg px-4 py-2 w-full text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-500 backdrop-blur-sm my-4"
-                            {...register("oldPassword", { required: "All fields are required.", minLength: { value: 8, message: "Password must be 8 characters long." }, maxLength: { value: 15, message: "Too long Password."} })}
+                            {...register("oldPassword", { required: "All fields are required.", minLength: { value: 8, message: "Password must be 8 characters long." }, maxLength: { value: 15, message: "Too long Password." } })}
                         />
                         <div
                             className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-200"
@@ -134,7 +125,7 @@ export default function UpdatePassword() {
                             type={showNewPassword ? "text" : "password"}
                             placeholder="Enter Your New Password"
                             className="bg-transparent border border-slate-400/50 rounded-lg px-4 py-2 w-full text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-500 backdrop-blur-sm my-4"
-                            {...register("newPassword", { required: "All fields are required.", minLength: { value: 8, message: "Password must be 8 characters long." }, maxLength: { value: 15, message: "Too long Password."} })}
+                            {...register("newPassword", { required: "All fields are required.", minLength: { value: 8, message: "Password must be 8 characters long." }, maxLength: { value: 15, message: "Too long Password." } })}
                         />
                         <div
                             className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"

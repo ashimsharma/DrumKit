@@ -10,6 +10,7 @@ import { useNavigate } from "react-router";
 import Loader from "./Loader.jsx";
 import { useDispatch } from "react-redux";
 import { set } from "../redux/userSlice.js";
+import { checkIfAuthenticated, refreshAccessToken } from "../../utils/index.js";
 
 export const HomeContext = createContext();
 
@@ -26,35 +27,29 @@ export default function Home() {
 
     useEffect(() => {
         (async () => {
-            const isAuthenticated = await checkIfAuthenticated();
-            if(isAuthenticated)
-                setLoading(false);
-
-            if (recordingSaved) 
+            if (recordingSaved) {
                 saveRecording();
+                return;
+            }
+
+            const isAuthenticated = await checkIfAuthenticated();
+            if(isAuthenticated){
+                dispatch(set(isAuthenticated.data.data.isGuest));
+                setLoading(false);
+            }
+            else{
+                const accessTokenRefresh = await refreshAccessToken();
+
+                if(accessTokenRefresh){
+                    dispatch(set(accessTokenRefresh.data.data.isGuest));
+                    setLoading(false);
+                }
+                else{
+                    navigate("/login");
+                }
+            }
         })();
     }, [recordingSaved]);
-
-    const checkIfAuthenticated = async () => {
-        try {
-            const response = await axios.get(
-                `${import.meta.env.VITE_API_URL}/users/check-auth`,
-                {
-                    withCredentials: true
-                }
-            )
-
-            if(response){
-                dispatch(set(response.data.data.isGuest));
-                return true;
-            } else{
-                return false;
-            }
-        } catch (error) {
-            navigate("/login");
-            return false;
-        }
-    }
 
     const saveRecording = async () => {
         try {

@@ -7,6 +7,7 @@ import axios from "axios";
 import PopUp from "./PopUp.jsx";
 import Loader from "./Loader.jsx";
 import { useLocation } from "react-router";
+import { checkIfAuthenticated } from "../../utils/index.js";
 
 export default function RegisterGuest() {
     const prevLocation = useLocation().state?.from;
@@ -22,6 +23,9 @@ export default function RegisterGuest() {
             const isAuthenticated = await checkIfAuthenticated();
             if (isAuthenticated) {
                 setLoading(false);
+            }
+            else{
+                navigate("/");
             }
         }
         )();
@@ -58,26 +62,6 @@ export default function RegisterGuest() {
             }, 3000);
         }
     };
-
-    const checkIfAuthenticated = async () => {
-        try {
-            const response = await axios.get(
-                `${import.meta.env.VITE_API_URL}/users/check-auth`,
-                {
-                    withCredentials: true
-                }
-            )
-
-            if(response){
-                return true;
-            } else{
-                return false;
-            }
-        } catch (error) {
-            navigate("/login");
-            return false;
-        }
-    }
 
     const backClick = () => {
         if (!prevLocation) {
