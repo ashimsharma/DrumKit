@@ -36,7 +36,6 @@ export default function RegisterGuest() {
     const registerGuestUser = async (data) => {
         reset();
         setShow(true);
-        setLoading(true);
         try {
             const response = await axios.post(
                 `${import.meta.env.VITE_API_URL}/users/convert-guest`,
@@ -49,21 +48,14 @@ export default function RegisterGuest() {
                 setError(false);
                 navigate('/login');
             }
-
-            setTimeout(() => {
-                setShow(false);
-                setMessage('Creating Account...');
-            }, 1500);
-
         } catch (error) {
             setMessage(error.response?.data.message);
             setError(true);
             setTimeout(() => {
                 setShow(false);
                 setMessage('Creating Account...');
+                setError(false);
             }, 3000);
-        } finally {
-            setLoading(false);
         }
     };
 

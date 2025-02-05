@@ -61,7 +61,7 @@ export default function Hamburger() {
             <HamburgerContext.Provider value={{ setOpenGuestAlert }}>
                 {show && <PopUp positiveMessage={positive} message={message} />}
                 {(isGuest && openGuestAlert) && <GuestLogoutAlert />}
-                <div className="lg:flex lg:flex-col basis-11/12 mx-2 my-2 hidden">
+                <div className="lg:flex lg:flex-col basis-full mx-2 my-3 hidden">
                     <div className="lg:justify-end lg:items-center lg:flex lg:flex-grow p-2">
                         <button
                             onClick={toggleMenu}

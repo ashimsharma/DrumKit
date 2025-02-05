@@ -99,10 +99,18 @@ export default function Profile() {
 
     const handleEditClick = () => {
         if(!userData.isGuest){
-            navigate("/profile/update-profile");
+            navigate("/profile/update-profile", {
+                state: {
+                    from: location.pathname
+                }
+            });
         }
         else{
-            navigate("/profile/register-guest");
+            navigate("/profile/register-guest", {
+                state: {
+                    from: location.pathname
+                }
+            });
         }
     }
 
