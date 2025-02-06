@@ -10,6 +10,7 @@ import UpdatePassword from './components/UpdatePassword.jsx';
 import RegisterGuest from './components/RegisterGuest.jsx';
 import { Provider } from 'react-redux';
 import store from './redux/store.js';
+import VerifyEmail from './components/VerifyEmail.jsx';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path='/recordings' element={<Recordings />} />
             <Route path='/login' element={<Login />} />
             <Route path='/signup' element={<Signup />} />
+            <Route path='/verify-email' element={<VerifyEmail/>} />
             <Route path='/profile' element={<Profile />} />
             <Route path='/profile/update-profile' element={<UpdateProfile />} />
             <Route path='/profile/update-password' element={<UpdatePassword />} />

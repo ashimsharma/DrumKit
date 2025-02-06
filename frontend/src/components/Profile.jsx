@@ -4,7 +4,7 @@ import UserIcon from "../images/User-Icon.png";
 import { IoChevronBackCircleSharp } from "react-icons/io5";
 import Loader from "./Loader";
 import axios from "axios";
-import { refreshAccessToken, checkIfAuthenticated } from "../../utils/index.js";
+import { refreshAccessToken, checkIfAuthenticated } from "../utils/index.js";
 import { useDispatch } from "react-redux";
 import { set } from "../redux/userSlice.js";
 

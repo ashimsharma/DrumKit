@@ -8,7 +8,7 @@ import TypeAnimation from "./TypeAnimation.jsx";
 import PopUp from "./PopUp.jsx";
 import axios from "axios";
 import Loader from "./Loader.jsx";
-import { refreshAccessToken, checkIfAuthenticated } from "../../utils/index.js";
+import { refreshAccessToken, checkIfAuthenticated } from "../utils/index.js";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -67,14 +67,15 @@ export default function Login() {
                 setShow(false);
                 setMessage('Logging In...');
                 navigate('/');
-            }, 1500);
+            }, 1000);
         } catch (error) {
             setMessage(error.response?.data.message || 'Failed to connect to server. Try Again Later.');
             setError(true);
             setTimeout(() => {
+                setError(false);
                 setShow(false);
                 setMessage('Logging In...');
-            }, 1500);
+            }, 3000);
         }
     }
 

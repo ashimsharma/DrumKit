@@ -7,7 +7,7 @@ import NavBar from "./NavBar.jsx";
 import Footer from "./Footer.jsx";
 import Loader from "./Loader.jsx";
 import { useDispatch } from "react-redux";
-import { refreshAccessToken, checkIfAuthenticated } from "../../utils/index.js";
+import { refreshAccessToken, checkIfAuthenticated } from "../utils/index.js";
 import { set } from "../redux/userSlice.js";
 
 export const RecordingsContext = createContext();
@@ -48,25 +48,6 @@ export default function () {
             setRecordingDeleted(false);
         })();
     }, [recordingDeleted])
-
-    const checkIfAuthenticated = async () => {
-        try {
-            const response = await axios.get(
-                `${import.meta.env.VITE_API_URL}/users/check-auth`,
-                {
-                    withCredentials: true
-                }
-            )
-
-            if (response) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (error) {
-            return false;
-        }
-    }
 
     const getRecordings = async () => {
         try {

@@ -1,9 +1,12 @@
 import { Guest } from "../models/guests.model.js";
 import { Recording } from "../models/recordings.model.js";
 import { User } from "../models/users.model.js";
+import sendVerificationEmail from "../services/nodemailer.js";
 import { ApiError } from "../utils/ApiError.js";
+import generateOTP from "../utils/OTPGenrator.js";
 import { validateEmail, validateName, validatePassword } from "../utils/Validation.js";
 import jwt, { decode } from "jsonwebtoken";
+import generateVerificationToken from "../utils/VerificationToken.js";
 
 const isAuthenticated = (req, res) => {
     const user = req?.user;
@@ -117,7 +120,14 @@ const registerUser = async (req, res) => {
                 )
         }
 
-        const user = await User.create({ firstname, lastname, email, password });
+        const otp = generateOTP();
+        const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+        const user = await User.create({ firstname, lastname, email, password, otp, otpExpires });
+
+        sendVerificationEmail(email, otp);
+
+        const verificationToken = generateVerificationToken(user._id, email);
 
         const createdUser = await User.findById(user._id).select(
             "-password -refreshToken -updatedAt -recordings"
@@ -135,7 +145,14 @@ const registerUser = async (req, res) => {
                 )
         }
 
+        const options = {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
+        };
+
         return res.status(200)
+            .cookie("verificationToken", verificationToken, options)
             .json(
                 {
                     statusCode: 200,
@@ -146,6 +163,73 @@ const registerUser = async (req, res) => {
             );
     } catch (error) {
         throw new ApiError(500, "Something went wrong while registering the user.");
+    }
+}
+
+const verifyEmail = async (req, res) => {
+    try {
+        const token = req.cookies?.verificationToken || req.headers["Verification"]?.replace("Bearer ", "");
+        const { otp } = req?.body;
+
+        if (!token) {
+            return res
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Token not provided."
+                    }
+                )
+        }
+
+        const decodedToken = jwt.verify(token, process.env.VERIFICATION_TOKEN_SECRET);
+
+        if (!decodedToken) {
+            return res
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Unauthorized request."
+                    }
+                )
+        }
+
+        let user = await User.findById(decodedToken._id).select("-password -refreshToken -recordings");
+
+        if (user.otp !== otp || user.otpExpires < new Date()) {
+            return res
+                .status(403)
+                .json({
+                    statusCode: 403,
+                    success: false,
+                    message: "Invalid or Expired OTP."
+                }
+                )
+        }
+
+        await User.findByIdAndUpdate(decodedToken._id, {$set: {isVerified: true, otp: null, otpExpires: null}});
+
+        const options = {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
+        };
+
+        return res
+        .status(200)
+        .clearCookie("verificationToken", options)
+        .json(
+            {
+                statusCode: 200,
+                success: true,
+                message: "Email Veified."
+            }
+        )
+    } catch (error) {
+        throw new ApiError(500, error?.message);
     }
 }
 
@@ -178,6 +262,18 @@ const loginUser = async (req, res) => {
         }
 
         const user = await User.findOne({ email });
+
+        if(!user.isVerified){
+            return res
+            .status(402)
+            .json(
+                {
+                    statusCode: 402,
+                    success: false,
+                    message: "Email not verified yet. Verify Email to Login."
+                }
+            )
+        }
 
         if (!user) {
             return res
@@ -703,4 +799,4 @@ const updateAccessToken = async (req, res, next) => {
     });
 }
 
-export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser, updateAccessToken, isAuthenticated, convertGuestAccount };
+export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser, updateAccessToken, isAuthenticated, convertGuestAccount, verifyEmail };

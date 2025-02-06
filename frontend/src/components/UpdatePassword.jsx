@@ -7,7 +7,7 @@ import Loader from "./Loader.jsx"; // Import your Loader component
 import PopUp from "./PopUp.jsx";
 import { useDispatch } from "react-redux";
 import { set } from "../redux/userSlice.js";
-import { checkIfAuthenticated } from "../../utils/index.js";
+import { checkIfAuthenticated } from "../utils/index.js";
 
 export default function UpdatePassword() {
     const dispatch = useDispatch();

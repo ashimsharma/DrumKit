@@ -7,7 +7,7 @@ import axios from "axios";
 import PopUp from "./PopUp.jsx";
 import Loader from "./Loader.jsx";
 import { useLocation } from "react-router";
-import { checkIfAuthenticated } from "../../utils/index.js";
+import { checkIfAuthenticated } from "../utils/index.js";
 
 export default function RegisterGuest() {
     const prevLocation = useLocation().state?.from;

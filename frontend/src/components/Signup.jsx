@@ -8,7 +8,7 @@ import TypeAnimation from "./TypeAnimation.jsx";
 import axios from "axios";
 import PopUp from "./PopUp.jsx";
 import Loader from "./Loader.jsx";
-import { refreshAccessToken, checkIfAuthenticated } from "../../utils/index.js";
+import { refreshAccessToken, checkIfAuthenticated } from "../utils/index.js";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -53,7 +53,10 @@ export default function Login() {
         try {
             const response = await axios.post(
                 `${import.meta.env.VITE_API_URL}/users/signup`,
-                data
+                data,
+                {
+                    withCredentials: true
+                }
             )
 
             if (response) {
@@ -64,13 +67,14 @@ export default function Login() {
             setTimeout(() => {
                 setShow(false);
                 setMessage('Creating Account...');
-                navigate('/login');
-            }, 1500);
+                navigate('/verify-email');
+            }, 1000);
 
         } catch (error) {
             setMessage(error.response?.data.message || 'Failed to connect to server. Try Again Later.');
             setError(true);
             setTimeout(() => {
+                setError(false);
                 setShow(false);
                 setMessage('Creating Account...');
             }, 3000);

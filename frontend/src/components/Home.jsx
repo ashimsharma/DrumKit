@@ -10,7 +10,7 @@ import { useNavigate } from "react-router";
 import Loader from "./Loader.jsx";
 import { useDispatch } from "react-redux";
 import { set } from "../redux/userSlice.js";
-import { checkIfAuthenticated, refreshAccessToken } from "../../utils/index.js";
+import { checkIfAuthenticated, refreshAccessToken } from "../utils/index.js";
 
 export const HomeContext = createContext();
 
