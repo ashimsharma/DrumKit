@@ -184,7 +184,7 @@ const verifyEmail = async (req, res) => {
         }
 
         const decodedToken = jwt.verify(token, process.env.VERIFICATION_TOKEN_SECRET);
-
+        
         if (!decodedToken) {
             return res
                 .status(401)
@@ -746,91 +746,43 @@ const updatePassword = async (req, res, next) => {
     }
 }
 
-const forgotPasswordEmailVerification = async (req, res) => {
-    try {
-
-    } catch (error) {
-        throw new ApiError(500, error?.message || "Password Update Failed.");
-    }
-}
-
-const forgotPasswordEmailSend = async (req, res) => {
+const forgotPasswordSendEmail = async (req, res) => {
     try {
         const {email} = req?.body;
 
-    } catch (error) {
-        throw new ApiError(500, error?.message || "Password Update Failed.");
-    }
-}
+        const user = await User.findOne({email});
 
-const forgotPasswordUpdate = async (req, res) => {
-    try {
-        const { newPassword, confirmNewPassword } = req.body;
-        const user = await User.findById(req.user._id);
-
-        if (
-            [oldPassword, newPassword].some((field) => field?.trim() === "")
-        ) {
+        if(!user){
             return res
-                .status(400)
-                .json(
-                    {
-                        statusCode: 400,
-                        success: false,
-                        message: "All fields are required."
-                    }
-                )
-
+            .status(401)
+            .json(
+                {
+                    statusCode: 401,
+                    success: false,
+                    message: "User with Email does not exist."
+                }
+            )
         }
 
-        if (!(validatePassword(oldPassword) && validatePassword(newPassword))) {
-            return res
-                .status(401)
-                .json(
-                    {
-                        statusCode: 401,
-                        success: false,
-                        message: "Invalid format."
-                    }
-                )
-        }
+        const otp = generateOTP();
+        const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
 
-        const passwordCorrect = await user.isPasswordCorrect(oldPassword);
+        const updatedUser = await User.findByIdAndUpdate(user._id, {$set: {otp, otpExpires}}, {new: true});
 
-        if (!passwordCorrect) {
-            return res
-                .status(401)
-                .json(
-                    {
-                        statusCode: 401,
-                        success: false,
-                        message: "Invalid Password."
-                    }
-                )
-        }
+        sendVerificationEmail(email, otp);
 
-        const updatedPasswordUser = await User.findOneAndUpdate({ _id: user._id }, { password: newPassword }, { new: true }).select("-password -refreshToken -updatedAt");
-
-        if (!updatedPasswordUser) {
-            return res
-                .status(500)
-                .json(
-                    {
-                        statusCode: 500,
-                        success: false,
-                        message: "Password Update Failed."
-                    }
-                );
-        }
+        const verificationToken = generateVerificationToken(user._id, email);
 
         return res
-            .status(200)
-            .json({
+        .status(200)
+        .cookie("verificationToken", verificationToken)
+        .json(
+            {
                 statusCode: 200,
-                data: { user: updatedPasswordUser },
                 success: true,
-                message: "Password Update Successfull"
-            })
+                message: "Verification OTP sent successfully."
+            }
+        );
     } catch (error) {
         throw new ApiError(500, error?.message || "Password Update Failed.");
     }
@@ -972,4 +924,4 @@ const updateAccessToken = async (req, res, next) => {
     });
 }
 
-export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser, updateAccessToken, isAuthenticated, convertGuestAccount, verifyEmail, resendOTP };
+export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser, updateAccessToken, isAuthenticated, convertGuestAccount, verifyEmail, resendOTP, forgotPasswordSendEmail };

@@ -55,6 +55,14 @@ export default function VerifyEmail() {
             )
 
             if (response) {
+                if(prevLocation === "/forgot-password-email-input"){
+                    navigate("/new-password", {
+                        state: {
+                            from: location.pathname
+                        }
+                    });
+                    return;
+                }
                 navigate("/login");
             }
         } catch (error) {

@@ -11,6 +11,8 @@ import RegisterGuest from './components/RegisterGuest.jsx';
 import { Provider } from 'react-redux';
 import store from './redux/store.js';
 import VerifyEmail from './components/VerifyEmail.jsx';
+import ForgotPasswordEmailInput from './components/ForgotPasswordEmailInput.jsx';
+import NewPassword from './components/NewPassword.jsx';
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
             <Route path='/profile' element={<Profile />} />
             <Route path='/profile/update-profile' element={<UpdateProfile />} />
             <Route path='/profile/update-password' element={<UpdatePassword />} />
+            <Route path='/forgot-password-email-input' element={<ForgotPasswordEmailInput />} />
+            <Route path='/new-password' element={<NewPassword />} />
             <Route path='/profile/register-guest' element={<RegisterGuest />} />
           </Routes>
         </Router>

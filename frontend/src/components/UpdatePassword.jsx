@@ -10,8 +10,6 @@ import { set } from "../redux/userSlice.js";
 import { checkIfAuthenticated } from "../utils/index.js";
 
 export default function UpdatePassword() {
-    const dispatch = useDispatch();
-
     useEffect(() => {
         (async () => {
             const isAuthenticated = await checkIfAuthenticated();
