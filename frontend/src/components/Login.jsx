@@ -152,6 +152,9 @@ export default function Login() {
                                         )}
                                     </button>
                                 </div>
+                                <div className="lg:text-center">
+                                    <button className="bg-none underline text-blue-700">Forgot Password?</button>
+                                </div>
                                 <input type="submit" value="Submit" className="w-full bg-blue-600 p-2 my-4 rounded-lg text-white hover:bg-blue-800 cursor-pointer" />
                             </form>
 

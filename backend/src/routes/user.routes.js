@@ -1,11 +1,14 @@
 import Router from "express";
-import { deleteUser, getUserDetails, loginUser, logoutGuest, logoutUser, registerGuest, registerUser, updateAccessToken, updatePassword, updateUser, isAuthenticated, convertGuestAccount, verifyEmail } from "../controllers/users.controller.js";
+import { deleteUser, getUserDetails, loginUser, logoutGuest, logoutUser, registerGuest, registerUser, updateAccessToken, updatePassword, updateUser, isAuthenticated, convertGuestAccount, verifyEmail, resendOTP } from "../controllers/users.controller.js";
 import verifyJWT from "../middlewares/auth.middleware.js";
 
 const userRouter = Router();
 
 userRouter.route("/signup").post(registerUser);
+
 userRouter.route("/verify-email").post(verifyEmail);
+userRouter.route("/resend-otp").post(resendOTP);
+
 userRouter.route("/login").post(loginUser);
 userRouter.route("/register-guest").post(registerGuest);
 userRouter.route("/update-accesstoken").post(updateAccessToken);

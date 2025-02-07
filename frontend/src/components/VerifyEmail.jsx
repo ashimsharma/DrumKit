@@ -1,14 +1,28 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoChevronBackCircleSharp } from "react-icons/io5";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import PopUp from "./PopUp.jsx";
+import Loader from "./Loader.jsx";
 
 export default function VerifyEmail() {
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const navigate = useNavigate();
     const [showNotification, setShowNotification] = useState({ show: false, positiveMessage: true, message: '' });
+    const [loading, setLoading] = useState(true);
+    const prevLocation = useLocation().state?.from;
 
+    useEffect(() => {
+        (
+            () => {
+                if(!prevLocation){
+                    navigate("/login");
+                    return;
+                }
+                setLoading(false);
+            }
+        )();
+    })
     const handleChange = (e, index) => {
         const value = e.target.value;
         if (isNaN(value)) return;
@@ -40,7 +54,7 @@ export default function VerifyEmail() {
                 }
             )
 
-            if(response){
+            if (response) {
                 navigate("/login");
             }
         } catch (error) {
@@ -51,15 +65,48 @@ export default function VerifyEmail() {
 
             setShowNotification({ show: true, positiveMessage: false, message: error.response?.data.message });
             setTimeout(() => {
-                setShowNotification({ show: false, positiveMessage: false, message: '' });
+                setShowNotification({ show: false, positiveMessage: true, message: '' });
             }, 3000);
         }
     };
+
+    const requestOTP = async () => {
+        try {
+            setShowNotification({ show: true, positiveMessage: true, message: 'Requesting for OTP...' });
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/users/resend-otp`,
+                {},
+                {
+                    withCredentials: true
+                }
+            )
+
+            if (response) {
+                setShowNotification({ show: true, positiveMessage: true, message: response.data.message });
+                setTimeout(() => {
+                    setShowNotification({ show: false, positiveMessage: true, message: '' });
+                }, 3000);
+            }
+        } catch (error) {
+            if (!error.response?.data) {
+                navigate("/login");
+                return;
+            }
+
+            setShowNotification({ show: true, positiveMessage: false, message: error.response?.data.message });
+            setTimeout(() => {
+                setShowNotification({ show: false, positiveMessage: true, message: '' });
+            }, 3000);
+        }
+    }
 
     const backClick = () => {
         navigate("/signup");
     }
 
+    if(loading){
+        return <Loader />
+    }
     return (
         <>
             {showNotification.show && <PopUp message={showNotification.message} positiveMessage={showNotification.positiveMessage} />}
@@ -68,9 +115,9 @@ export default function VerifyEmail() {
                     <IoChevronBackCircleSharp size={40} />
                     <p className="p-2 text-xl">Back</p>
                 </div>
-                <div className="flex flex-col items-center justify-center min-h-screen">
+                <div className="flex flex-col items-center min-h-screen">
                     <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96 text-center">
-                        <h2 className="text-2xl font-semibold mb-4">Verify OTP</h2>
+                        <h2 className="text-2xl font-semibold mb-4">Verify Email</h2>
                         <p className="text-white mb-4">Enter the 6-digit OTP sent to your email.</p>
                         <div className="flex justify-center gap-3 mb-4 text-black">
                             {otp.map((digit, index) => (
@@ -92,6 +139,7 @@ export default function VerifyEmail() {
                         >
                             Verify OTP
                         </button>
+                        <button className="bg-none underline text-blue-700 mt-2" onClick={requestOTP}>Resend OTP?</button>
                     </div>
                 </div>
             </div>

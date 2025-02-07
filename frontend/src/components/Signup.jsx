@@ -67,7 +67,11 @@ export default function Login() {
             setTimeout(() => {
                 setShow(false);
                 setMessage('Creating Account...');
-                navigate('/verify-email');
+                navigate('/verify-email', {
+                    state: {
+                        from: location.pathname
+                    }
+                });
             }, 1000);
 
         } catch (error) {
