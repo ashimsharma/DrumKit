@@ -27,21 +27,52 @@ export default function NewPassword() {
         register,
         handleSubmit,
         watch,
+        reset,
         formState: { errors },
     } = useForm({
         mode: "onChange",
     });
 
     const newPassword = watch('newPassword');
+    const confirmPassword = watch('confirmPassword');
 
     const navigate = useNavigate();
 
     const backClick = () => {
-        navigate("/profile"); // Navigate to the previous page
+        navigate("/profile");
     };
 
-    const onSubmit = async (data) => {
-        console.log(data);
+    const generateNewPassword = async (data) => {
+        reset();
+        try {
+            setShowNotification({ show: true, positiveMessage: true, message: 'Updating Password...' });
+            const response = await axios.patch(
+                `${import.meta.env.VITE_API_URL}/users/generate-new-password`,
+                { ...data, type: "Update Password." },
+                {
+                    withCredentials: true,
+                }
+            );
+
+            if (response) {
+                setShowNotification({ show: true, positiveMessage: true, message: response.data.message });
+            }
+
+            setTimeout(() => {
+                setShowNotification({ show: false, positiveMessage: false, message: '' });
+                navigate('/profile');
+            }, 1500);
+        } catch (error) {
+            if (!error.response?.data) {
+                navigate("/login");
+                return;
+            }
+
+            setShowNotification({ show: true, positiveMessage: false, message: error.response?.data.message });
+            setTimeout(() => {
+                setShowNotification({ show: false, positiveMessage: false, message: '' });
+            }, 1500);
+        }
     };
 
     if (loading) {
@@ -63,7 +94,7 @@ export default function NewPassword() {
 
                 {/* Form */}
                 <form
-                    onSubmit={handleSubmit(onSubmit)}
+                    onSubmit={handleSubmit(generateNewPassword)}
                     className="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg"
                 >
                     <h2 className="text-3xl font-bold mb-6 text-center">Generate New Password</h2>
@@ -83,15 +114,15 @@ export default function NewPassword() {
                             {showNewPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
                         </div>
                     </div>
-
-                    {/* New Password Field */}
                     <div className="relative">
                         <input
+                            disabled={errors.newPassword || !newPassword ? true : false}
                             type={showConfirmPassword ? "text" : "password"}
                             placeholder="Confirm Password"
-                            className="bg-transparent border border-slate-400/50 rounded-lg px-4 py-2 w-full text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-500 backdrop-blur-sm my-4"
+                            className="bg-transparent border border-slate-400/50 rounded-lg px-4 py-2 w-full text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-500 backdrop-blur-sm my-4 disabled:opacity-50 disabled:cursor-not-allowed"
                             {...register("confirmPassword", {
-                                required: "All fields are required.", minLength: { value: 8, message: "Password must be 8 characters long." }, maxLength: { value: 15, message: "Too long Password." }, validate: (value) => value === newPassword ||"Values do not match."})}
+                                required: "All fields are required.", minLength: { value: 8, message: "Password must be 8 characters long." }, maxLength: { value: 15, message: "Too long Password." }, validate: (value) => value === newPassword || "Values do not match."
+                            })}
                         />
                         <div
                             className="absolute right-4 top-9 transform -translate-y-1/2 cursor-pointer"
@@ -99,11 +130,9 @@ export default function NewPassword() {
                         >
                             {showConfirmPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
                         </div>
-                        {console.log(errors.confirmPassword?.message)}
                         <p className="text-red-500 text-sm h-4">{errors.newPassword?.message || errors.confirmPassword?.message}</p>
                     </div>
-
-                    {/* Submit Button */}
+                    
                     <div className="flex gap-2">
                         <button
                             type="submit"

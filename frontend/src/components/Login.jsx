@@ -153,7 +153,7 @@ export default function Login() {
                                     </button>
                                 </div>
                                 <div className="lg:text-center">
-                                    <button className="bg-none underline text-blue-700" onClick={() => navigate('/forgot-password-email-input', {
+                                    <button type="button" className="bg-none underline text-blue-700" onClick={() => navigate('/forgot-password-email-input', {
                                         state: {
                                             from: location.pathname
                                         }

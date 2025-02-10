@@ -47,7 +47,8 @@ export default function VerifyEmail() {
             const response = await axios.post(
                 `${import.meta.env.VITE_API_URL}/users/verify-email`,
                 {
-                    otp: otp.join("")
+                    otp: otp.join(""),
+                    type: prevLocation === "/forgot-password-email-input" ? "Update Password." : "Email Verification"
                 },
                 {
                     withCredentials: true

@@ -16,7 +16,7 @@ export default function UpdatePassword() {
             if (isAuthenticated) {
                 setLoading(false);
             }
-            else{
+            else {
                 navigate("/");
             }
         })();
@@ -112,9 +112,6 @@ export default function UpdatePassword() {
                         >
                             {showOldPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
                         </div>
-                        {errors.oldPassword && (
-                            <p className="text-red-500 text-sm mt-1">{errors.oldPassword.message}</p>
-                        )}
                     </div>
 
                     {/* New Password Field */}
@@ -126,14 +123,20 @@ export default function UpdatePassword() {
                             {...register("newPassword", { required: "All fields are required.", minLength: { value: 8, message: "Password must be 8 characters long." }, maxLength: { value: 15, message: "Too long Password." } })}
                         />
                         <div
-                            className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                            className="absolute right-4 top-9 transform -translate-y-1/2 cursor-pointer"
                             onClick={() => setShowNewPassword(!showNewPassword)}
                         >
                             {showNewPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
                         </div>
-                        {errors.newPassword && (
-                            <p className="text-red-500 text-sm mt-1">{errors.newPassword.message}</p>
-                        )}
+                        <p className="text-red-500 text-sm mt-1 h-4">{errors.oldPassword?.message || errors.newPassword?.message}</p>
+                    </div>
+                    
+                    <div className="lg:text-center">
+                        <button type="button" className="bg-none underline text-blue-700" onClick={() => navigate('/forgot-password-email-input', {
+                            state: {
+                                from: location.pathname
+                            }
+                        })}>Forgot Password?</button>
                     </div>
 
                     {/* Submit Button */}

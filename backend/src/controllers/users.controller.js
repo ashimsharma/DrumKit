@@ -169,6 +169,7 @@ const registerUser = async (req, res) => {
 const verifyEmail = async (req, res) => {
     try {
         const token = req.cookies?.verificationToken || req.headers["Verification"]?.replace("Bearer ", "");
+
         const { otp } = req?.body;
 
         if (!token) {
@@ -184,7 +185,7 @@ const verifyEmail = async (req, res) => {
         }
 
         const decodedToken = jwt.verify(token, process.env.VERIFICATION_TOKEN_SECRET);
-        
+
         if (!decodedToken) {
             return res
                 .status(401)
@@ -222,7 +223,7 @@ const verifyEmail = async (req, res) => {
                 )
         }
 
-        await User.findByIdAndUpdate(decodedToken._id, {$set: {isVerified: true, otp: null, otpExpires: null}});
+        await User.findByIdAndUpdate(decodedToken._id, { $set: { isVerified: true, otp: null, otpExpires: null } });
 
         const options = {
             httpOnly: true,
@@ -230,16 +231,28 @@ const verifyEmail = async (req, res) => {
             sameSite: "none"
         };
 
+        if (req.body?.type === "Update Password.") {
+            return res
+                .status(200)
+                .json(
+                    {
+                        statusCode: 200,
+                        success: true,
+                        message: "Email Veified."
+                    }
+                )
+        }
+
         return res
-        .status(200)
-        .clearCookie("verificationToken", options)
-        .json(
-            {
-                statusCode: 200,
-                success: true,
-                message: "Email Veified."
-            }
-        )
+            .status(200)
+            .clearCookie("verificationToken", options)
+            .json(
+                {
+                    statusCode: 200,
+                    success: true,
+                    message: "Email Veified."
+                }
+            )
     } catch (error) {
         throw new ApiError(500, error?.message);
     }
@@ -292,7 +305,7 @@ const resendOTP = async (req, res) => {
         const newOTP = generateOTP();
         const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
 
-        await User.findByIdAndUpdate(decodedToken._id, {$set: {otp: newOTP, otpExpires: otpExpires}});
+        await User.findByIdAndUpdate(decodedToken._id, { $set: { otp: newOTP, otpExpires: otpExpires } });
 
         sendVerificationEmail(user.email, newOTP);
 
@@ -303,16 +316,129 @@ const resendOTP = async (req, res) => {
         };
 
         return res
-        .status(200)
-        .json(
-            {
-                statusCode: 200,
-                success: true,
-                message: "Verification OTP sent. Check Your Email."
-            }
-        )
+            .status(200)
+            .json(
+                {
+                    statusCode: 200,
+                    success: true,
+                    message: "Verification OTP sent. Check Your Email."
+                }
+            )
     } catch (error) {
         throw new ApiError(500, error?.message);
+    }
+}
+
+const generateNewPassword = async (req, res) => {
+    try {
+        const { newPassword, confirmPassword } = req?.body;
+        const token = req.cookies?.verificationToken || req.headers["Verification"]?.replace("Bearer ", "");
+
+        if (!token) {
+            return res
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Token not provided."
+                    }
+                )
+        }
+
+        const decodedToken = jwt.verify(token, process.env.VERIFICATION_TOKEN_SECRET);
+
+        if (!decodedToken) {
+            return res
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Unauthorized request."
+                    }
+                )
+        }
+
+        if (
+            [newPassword, confirmPassword].some((field) => field?.trim() === "")
+        ) {
+            return res
+                .status(400)
+                .json(
+                    {
+                        statusCode: 400,
+                        success: false,
+                        message: "All fields are required."
+                    }
+                )
+        }
+
+        if (!(validatePassword(newPassword) && validatePassword(confirmPassword))) {
+            return res
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Invalid format."
+                    }
+                )
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Values do not match."
+                    }
+                )
+
+        }
+
+        let user = await User.findById(decodedToken._id).select("-password -refreshToken -recordings");
+
+        if (!user) {
+            return res
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Invalid Token."
+                    }
+                )
+        }
+
+
+        const updatedPasswordUser = await User.findOneAndUpdate({ _id: user._id }, { password: newPassword }, { new: true }).select("-password -refreshToken -updatedAt");
+
+        if (!updatedPasswordUser) {
+            return res
+                .status(500)
+                .json(
+                    {
+                        statusCode: 500,
+                        success: false,
+                        message: "Password Update Failed."
+                    }
+                );
+        }
+
+        return res
+            .status(200)
+            .clearCookie("verificationToken")
+            .json({
+                statusCode: 200,
+                data: { user: updatedPasswordUser },
+                success: true,
+                message: "Password Update Successfull"
+            })
+    } catch (error) {
+        throw new ApiError(500, error?.message || "Password Update Failed.");
     }
 }
 
@@ -346,16 +472,16 @@ const loginUser = async (req, res) => {
 
         const user = await User.findOne({ email });
 
-        if(!user.isVerified){
+        if (!user.isVerified) {
             return res
-            .status(402)
-            .json(
-                {
-                    statusCode: 402,
-                    success: false,
-                    message: "Email not verified yet. Verify Email to Login."
-                }
-            )
+                .status(402)
+                .json(
+                    {
+                        statusCode: 402,
+                        success: false,
+                        message: "Email not verified yet. Verify Email to Login."
+                    }
+                )
         }
 
         if (!user) {
@@ -748,41 +874,41 @@ const updatePassword = async (req, res, next) => {
 
 const forgotPasswordSendEmail = async (req, res) => {
     try {
-        const {email} = req?.body;
+        const { email } = req?.body;
 
-        const user = await User.findOne({email});
+        const user = await User.findOne({ email });
 
-        if(!user){
+        if (!user) {
             return res
-            .status(401)
-            .json(
-                {
-                    statusCode: 401,
-                    success: false,
-                    message: "User with Email does not exist."
-                }
-            )
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "User with Email does not exist."
+                    }
+                )
         }
 
         const otp = generateOTP();
         const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
 
-        const updatedUser = await User.findByIdAndUpdate(user._id, {$set: {otp, otpExpires}}, {new: true});
+        const updatedUser = await User.findByIdAndUpdate(user._id, { $set: { otp, otpExpires } }, { new: true });
 
         sendVerificationEmail(email, otp);
 
         const verificationToken = generateVerificationToken(user._id, email);
 
         return res
-        .status(200)
-        .cookie("verificationToken", verificationToken)
-        .json(
-            {
-                statusCode: 200,
-                success: true,
-                message: "Verification OTP sent successfully."
-            }
-        );
+            .status(200)
+            .cookie("verificationToken", verificationToken)
+            .json(
+                {
+                    statusCode: 200,
+                    success: true,
+                    message: "Verification OTP sent successfully."
+                }
+            );
     } catch (error) {
         throw new ApiError(500, error?.message || "Password Update Failed.");
     }
@@ -924,4 +1050,4 @@ const updateAccessToken = async (req, res, next) => {
     });
 }
 
-export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser, updateAccessToken, isAuthenticated, convertGuestAccount, verifyEmail, resendOTP, forgotPasswordSendEmail };
+export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser, updateAccessToken, isAuthenticated, convertGuestAccount, verifyEmail, resendOTP, forgotPasswordSendEmail, generateNewPassword };
