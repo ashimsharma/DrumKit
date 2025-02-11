@@ -122,26 +122,26 @@ export default function Profile() {
                         <p className="p-2 text-xl">Back</p>
                     </div>
 
-                    <div className="flex justify-center items-center m-8">
+                    <div className="flex justify-center items-center m-4">
                         <div className="bg-gray-800 rounded-xl shadow-lg overflow-hidden w-full max-w-lg h-full">
                             <div className="relative h-48 bg-gray-800">
                                 <img
                                     src={UserIcon}
                                     alt="Profile"
-                                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full"
+                                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 lg:w-30 lg:h-30 rounded-full"
                                 />
                             </div>
 
                             <div className="text-center py-6 px-4">
-                                <h1 className="text-3xl font-bold text-white">{userData.isGuest ? `${userData.user.name}` : `${userData.user.firstname} ${userData.user.lastname}`}</h1>
-                                <p className="text-lg mt-2 text-gray-300">{userData.isGuest ? `` : `${userData.user.email}`}</p>
+                                <h1 className="text-3xl lg:text-2xl font-bold text-white">{userData.isGuest ? `${userData.user.name}` : `${userData.user.firstname} ${userData.user.lastname}`}</h1>
+                                <p className="text-lg lg:text-md mt-2 text-gray-300">{userData.isGuest ? `` : `${userData.user.email}`}</p>
                                 <p className="text-gray-400 mt-2">{`${userData.isGuest ? 'Guest User' : 'Registered User'}`}</p>
 
                                 <div className="mt-6">
-                                    <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg mx-2 my-2" onClick={handleEditClick}>
+                                    <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg mx-2 my-2" onClick={handleEditClick}>
                                         {`${userData.isGuest ? 'Register Account' : 'Edit Profile'}`}
                                     </button>
-                                    {!userData.isGuest && <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-6 rounded-lg mx-2 my-2" onClick={() => navigate("/profile/update-password")}>
+                                    {!userData.isGuest && <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg mx-2 my-2" onClick={() => navigate("/profile/update-password")}>
                                         Edit Password
                                     </button>}
                                 </div>

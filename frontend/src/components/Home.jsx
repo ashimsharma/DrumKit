@@ -20,9 +20,10 @@ export default function Home() {
     const [recordingEnded, setRecordingEnded] = useState(false);
     const [recordingSaved, setRecordingSaved] = useState(false);
     const [recordingName, setRecordingName] = useState('');
-    const [showNotification, setShowNotification] = useState({ show: false, positiveMessage: true, message: ''});
+    const [showNotification, setShowNotification] = useState({ show: false, positiveMessage: true, message: '' });
     const [soundArray, setSoundArray] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [checked, setChecked] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -33,18 +34,18 @@ export default function Home() {
             }
 
             const isAuthenticated = await checkIfAuthenticated();
-            if(isAuthenticated){
+            if (isAuthenticated) {
                 dispatch(set(isAuthenticated.data.data.isGuest));
                 setLoading(false);
             }
-            else{
+            else {
                 const accessTokenRefresh = await refreshAccessToken();
 
-                if(accessTokenRefresh){
+                if (accessTokenRefresh) {
                     dispatch(set(accessTokenRefresh.data.data.isGuest));
                     setLoading(false);
                 }
-                else{
+                else {
                     navigate("/login");
                 }
             }
@@ -56,11 +57,11 @@ export default function Home() {
             const resposne = await axios.post(
                 `${import.meta.env.VITE_API_URL}/recordings/post-recording`,
                 { name: recordingName, recordedData: soundArray },
-                {withCredentials: true}
+                { withCredentials: true }
             )
 
             if (resposne) {
-                setShowNotification({ show: true, positiveMessage: true, message: "Recording Saved Successfully."});
+                setShowNotification({ show: true, positiveMessage: true, message: "Recording Saved Successfully." });
                 setTimeout(() => {
                     setShowNotification({ show: false, positiveMessage: true, message: "" });
                 }, 3000);
@@ -70,7 +71,7 @@ export default function Home() {
             setRecordingName('');
             setRecordingSaved(false);
         } catch (error) {
-            setShowNotification({ show: true, positiveMessage: false, message: "Recording not Saved."});
+            setShowNotification({ show: true, positiveMessage: false, message: "Recording not Saved." });
             setTimeout(() => {
                 setShowNotification({ show: false, positiveMessage: true, message: "" });
             }, 3000);
@@ -83,17 +84,35 @@ export default function Home() {
 
     return (
         loading ? <Loader /> :
-        <>
-            <HomeContext.Provider value={{ recordingStarted, setRecordingStarted, recordingEnded, setRecordingEnded, recordingName, setRecordingName, setShowNotification, soundArray, setSoundArray, recordingSaved, setRecordingSaved }}>
-                <NavBar />
-                <main className={`bg-gray-900 text-white p-4 h-screen`}>
-                    {showNotification.show && <PopUp message={showNotification.message} positiveMessage={showNotification.positiveMessage} />}
-                    <DrumKit />
-                    <RecordToolBar />
-                    {recordingEnded && <SaveRecording />}
-                </main>
-                <Footer />
-            </HomeContext.Provider>
-        </>
+            <>
+                <HomeContext.Provider value={{ recordingStarted, setRecordingStarted, recordingEnded, setRecordingEnded, recordingName, setRecordingName, setShowNotification, soundArray, setSoundArray, recordingSaved, setRecordingSaved, checked }}>
+                    <NavBar />
+                    <main className={`bg-gray-900 text-white p-4 h-screen`}>
+                        {showNotification.show && <PopUp message={showNotification.message} positiveMessage={showNotification.positiveMessage} />}
+                        <DrumKit />
+                        <RecordToolBar />
+                        <label className={`flex items-center justify-center space-x-2 cursor-pointer lg:hidden ${checked ? "text-red-400" : "text-white"}`}>
+                            <input
+                                type="checkbox"
+                                className="hidden"
+                                checked={checked}
+                                onChange={() => setChecked(!checked)}
+                            />
+
+                            <div className={`w-5 h-5 border-2 border-gray-400 rounded-md flex items-center justify-center transition-all ${checked ? "bg-red-400 border-red-400" : "bg-transparent"}`}>
+                                {checked && (
+                                    <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                )}
+                            </div>
+
+                            <span className="select-none">Show keyboard shortcuts?</span>
+                        </label>
+                        {recordingEnded && <SaveRecording />}
+                    </main>
+                    <Footer />
+                </HomeContext.Provider>
+            </>
     );
 }

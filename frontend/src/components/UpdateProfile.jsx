@@ -111,10 +111,10 @@ export default function UpdateProfile() {
     return (
         <>
             {showNotification.show && <PopUp message={showNotification.message} positiveMessage={showNotification.positiveMessage} />}
-            <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
+            <div className="min-h-screen flex flex-col gap-4 bg-gray-900 text-white">
                 {/* Back Button */}
                 <div
-                    className="absolute top-4 left-4 inline-flex text-gray-400 hover:text-gray-600 items-center cursor-pointer"
+                    className="inline-flex text-gray-400 hover:text-gray-600 items-center cursor-pointer m-4"
                     onClick={backClick}
                 >
                     <IoChevronBackCircleSharp size={40} />
@@ -124,7 +124,7 @@ export default function UpdateProfile() {
                 {/* Form */}
                 <form
                     onSubmit={handleSubmit(onSubmit)}
-                    className="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg"
+                    className="w-1/3 lg:w-11/12 p-8 mx-auto bg-gray-800 rounded-lg shadow-lg"
                 >
                     <h2 className="text-3xl font-bold mb-6 text-center">Update Profile</h2>
 

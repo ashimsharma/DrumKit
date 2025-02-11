@@ -15,7 +15,7 @@ export default function VerifyEmail() {
     useEffect(() => {
         (
             () => {
-                if(!prevLocation){
+                if (!prevLocation) {
                     navigate("/login");
                     return;
                 }
@@ -44,6 +44,19 @@ export default function VerifyEmail() {
 
     const handleSubmit = async (e) => {
         try {
+            const isOtpFieldsFilled = otp.filter(value => {
+                return value === "";
+            });
+
+
+            if (isOtpFieldsFilled.length !== 0) {
+                setShowNotification({ show: true, positiveMessage: false, message: 'OTP is required' });
+                setTimeout(() => {
+                    setShowNotification({ show: false, positiveMessage: true, message: '' });
+                }, 3000);
+                return;
+            };
+
             const response = await axios.post(
                 `${import.meta.env.VITE_API_URL}/users/verify-email`,
                 {
@@ -56,7 +69,7 @@ export default function VerifyEmail() {
             )
 
             if (response) {
-                if(prevLocation === "/forgot-password-email-input"){
+                if (prevLocation === "/forgot-password-email-input") {
                     navigate("/new-password", {
                         state: {
                             from: location.pathname
@@ -113,7 +126,7 @@ export default function VerifyEmail() {
         navigate("/signup");
     }
 
-    if(loading){
+    if (loading) {
         return <Loader />
     }
     return (
@@ -124,7 +137,7 @@ export default function VerifyEmail() {
                     <IoChevronBackCircleSharp size={40} />
                     <p className="p-2 text-xl">Back</p>
                 </div>
-                <div className="flex flex-col items-center min-h-screen">
+                <div className="flex flex-col items-center mt-4 min-h-screen">
                     <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96 text-center">
                         <h2 className="text-2xl font-semibold mb-4">Verify Email</h2>
                         <p className="text-white mb-4">Enter the 6-digit OTP sent to your email.</p>

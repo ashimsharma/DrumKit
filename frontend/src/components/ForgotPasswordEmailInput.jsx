@@ -58,9 +58,9 @@ export default function ForgotPasswordEmailInput() {
             setMessage(error.response?.data.message || 'Failed to connect to server. Try Again Later.');
             setError(true);
             setTimeout(() => {
-                setError(false)
+                setError(false);
                 setShow(false);
-                setMessage('');
+                setMessage('Requesting for Verification OTP...');
             }, 1500);
         }
     }
@@ -76,8 +76,8 @@ export default function ForgotPasswordEmailInput() {
                     </div>
 
                     <div className="w-full h-full">
-                        <div className="p-14 lg:p-16 w-1/2 m-auto">
-                            <h1 className="text-center text-white text-4xl font-bold py-8">Enter Email for Verification OTP</h1>
+                        <div className="w-1/2 lg:w-3/4 m-auto">
+                            <h1 className="text-center text-white text-3xl font-bold py-8">Enter Email for Verification OTP</h1>
                             <form action="" onSubmit={handleSubmit(sendEmail)}>
                                 <input type="text" placeholder="Email" className="bg-transparent border border-slate-400/50 rounded-lg px-4 py-2 w-full text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-500 backdrop-blur-sm col-span-2" {...register("email", { required: "Email is required.", pattern: { value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: "Email in wrong format." } })} />
                                 <p className="text-red-600 text-sm w-full h-3 my-2">{(errors.email || errors.password) && (errors.email?.message || errors.password?.message)}</p>
