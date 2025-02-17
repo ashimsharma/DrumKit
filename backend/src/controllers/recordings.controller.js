@@ -49,7 +49,15 @@ const saveRecording = async (req, res, next) => {
             }
         )
     } catch (error) {
-        throw new ApiError(501, error?.message);
+        return res
+        .status(501)
+        .json(
+            {
+                statusCode: 501,
+                success: false,
+                message: "Internal Server Error."
+            }
+        )
     }
 }
 
@@ -102,71 +110,91 @@ const getAllRecordings = async (req, res, next) => {
             }
         )
     } catch (error) {
-        throw new ApiError(501, error?.message)
+        return res
+        .status(501)
+        .json(
+            {
+                statusCode: 501,
+                success: false,
+                message: "Internal Server Error."
+            }
+        )
     }
 }
 
 
 const deleteRecording = async (req, res, next) => {
-    const user = req.user;
-    const {id} = req.body;
-
-    if(!user){
-        return res
-        .status(401)
-        .json(
-            {
-                statusCode: 401,
-                success: false,
-                message: "Unauthorized request."
-            }
-        )
-    }
-
-    const deletedRecording = await Recording.findByIdAndDelete(id, {new: true});
-
-    if(!deletedRecording){
-        return res
-        .status(500)
-        .json(
-            {
-                statusCode: 500,
-                success: false,
-                message: "Something went wrong while deleting recording."
-            }
-        )
-    }
-
-    let updatedUser;
+    try {
+        const user = req.user;
+        const {id} = req.body;
     
-    if (!req?.isGuest) {
-        updatedUser = await User.findByIdAndUpdate(user._id, {$pull: {recordings: deletedRecording._id}}, {new: true});
-    }
-    else{
-        updatedUser = await Guest.findByIdAndUpdate(user._id, {$pull: {recordings: deletedRecording._id}}, {new: true});
-    }
-
-    if(!updatedUser){
+        if(!user){
+            return res
+            .status(401)
+            .json(
+                {
+                    statusCode: 401,
+                    success: false,
+                    message: "Unauthorized request."
+                }
+            )
+        }
+    
+        const deletedRecording = await Recording.findByIdAndDelete(id, {new: true});
+    
+        if(!deletedRecording){
+            return res
+            .status(500)
+            .json(
+                {
+                    statusCode: 500,
+                    success: false,
+                    message: "Something went wrong while deleting recording."
+                }
+            )
+        }
+    
+        let updatedUser;
+        
+        if (!req?.isGuest) {
+            updatedUser = await User.findByIdAndUpdate(user._id, {$pull: {recordings: deletedRecording._id}}, {new: true});
+        }
+        else{
+            updatedUser = await Guest.findByIdAndUpdate(user._id, {$pull: {recordings: deletedRecording._id}}, {new: true});
+        }
+    
+        if(!updatedUser){
+            return res
+            .status(500)
+            .json(
+                {
+                    statusCode: 500,
+                    success: false,
+                    message: "Something went wrong while updating user."
+                }
+            )
+        }
+    
         return res
-        .status(500)
+        .status(200)
         .json(
             {
-                statusCode: 500,
+                statusCode: 200,
+                success: true,
+                message: "Recording Deleted."
+            }
+        )
+    } catch (error) {
+        return res
+        .status(501)
+        .json(
+            {
+                statusCode: 501,
                 success: false,
-                message: "Something went wrong while updating user."
+                message: "Internal Server Error."
             }
         )
     }
-
-    return res
-    .status(200)
-    .json(
-        {
-            statusCode: 200,
-            success: true,
-            message: "Recording Deleted."
-        }
-    )
 }
 
 export {getAllRecordings, saveRecording, deleteRecording};

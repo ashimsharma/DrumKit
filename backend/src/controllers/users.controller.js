@@ -51,7 +51,15 @@ const generateUserAccessAndRefreshTokens = async (id) => {
 
         return { accessToken, refreshToken };
     } catch (error) {
-        throw new ApiError(500, "Access and Refresh Token Generation Failed.");
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 }
 
@@ -71,7 +79,15 @@ const generateGuestAccessAndRefreshTokens = async (id) => {
 
         return { accessToken, refreshToken };
     } catch (error) {
-        throw new ApiError(500, error?.message);
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 }
 
@@ -162,7 +178,15 @@ const registerUser = async (req, res) => {
                 }
             );
     } catch (error) {
-        throw new ApiError(500, "Something went wrong while registering the user.");
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 }
 
@@ -254,7 +278,15 @@ const verifyEmail = async (req, res) => {
                 }
             )
     } catch (error) {
-        throw new ApiError(500, error?.message);
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 }
 
@@ -325,7 +357,15 @@ const resendOTP = async (req, res) => {
                 }
             )
     } catch (error) {
-        throw new ApiError(500, error?.message);
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 }
 
@@ -438,7 +478,15 @@ const generateNewPassword = async (req, res) => {
                 message: "Password Update Successfull"
             })
     } catch (error) {
-        throw new ApiError(500, error?.message || "Password Update Failed.");
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 }
 
@@ -532,7 +580,15 @@ const loginUser = async (req, res) => {
                 }
             )
     } catch (error) {
-        throw new ApiError(500, error?.message)
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 };
 
@@ -571,7 +627,15 @@ const registerGuest = async (req, res, next) => {
                 }
             )
     } catch (error) {
-        throw new ApiError(500, error?.message);
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 }
 
@@ -676,7 +740,15 @@ const convertGuestAccount = async (req, res) => {
                 }
             )
     } catch (error) {
-        throw new ApiError(500, error?.message);
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 }
 
@@ -692,7 +764,15 @@ const logoutUser = async (req, res, next) => {
 
         // Check if user update was successful
         if (!userUpdate) {
-            throw new ApiError(500, "Logout Failed.");
+            return res
+                .status(401)
+                .json(
+                    {
+                        statusCode: 500,
+                        success: false,
+                        message: "Internal Server Error."
+                    }
+                )
         }
 
         const options = { httpOnly: true, secure: true };
@@ -710,7 +790,15 @@ const logoutUser = async (req, res, next) => {
             });
     } catch (error) {
         // Handle errors, if any
-        throw new ApiError(500, error?.message);
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 };
 
@@ -747,7 +835,15 @@ const logoutGuest = async (req, res, next) => {
                 message: "Logout Successfull"
             })
     } catch (error) {
-        throw new ApiError(500, error?.message);
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 }
 
@@ -795,7 +891,15 @@ const updateUser = async (req, res, next) => {
             message: "Update Successful.",
         });
     } catch (error) {
-        throw new ApiError(500, error?.message || "Update Failed.");
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 };
 
@@ -868,7 +972,15 @@ const updatePassword = async (req, res, next) => {
                 message: "Password Update Successfull"
             })
     } catch (error) {
-        throw new ApiError(500, error?.message || "Password Update Failed.");
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 }
 
@@ -910,7 +1022,15 @@ const forgotPasswordSendEmail = async (req, res) => {
                 }
             );
     } catch (error) {
-        throw new ApiError(500, error?.message || "Password Update Failed.");
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 }
 
@@ -929,46 +1049,66 @@ const getUserDetails = async (req, res, next) => {
                 }
             )
     } catch (error) {
-        throw new ApiError(500, "User details fetching failed.");
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
     }
 }
 
 
 const deleteUser = async (req, res, next) => {
-    const user = await User.findById(req.user._id);
-    const { password } = req.body;
+    try {
+        const user = await User.findById(req.user._id);
+        const { password } = req.body;
 
-    const passwordCorrect = user.isPasswordCorrect(password);
+        const passwordCorrect = user.isPasswordCorrect(password);
 
-    if (!passwordCorrect) {
+        if (!passwordCorrect) {
+            return res
+                .status(404)
+                .json(
+                    {
+                        statusCode: 404,
+                        success: false,
+                        message: "Incorrect Password."
+                    }
+                )
+        }
+
+        const userDelete = await User.findByIdAndDelete(user._id);
+
+        if (!userDelete) {
+            throw new ApiError(500, "Account deletion failed.");
+        }
+
         return res
-            .status(404)
+            .status(200)
+            .clearCookie("accessToken")
+            .clearCookie("refreshToken")
             .json(
                 {
-                    statusCode: 404,
+                    statusCode: 200,
+                    message: "Account Deletion Successfull.",
+                    success: true
+                }
+            );
+    } catch (error) {
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
                     success: false,
-                    message: "Incorrect Password."
+                    message: "Internal Server Error."
                 }
             )
     }
-
-    const userDelete = await User.findByIdAndDelete(user._id);
-
-    if (!userDelete) {
-        throw new ApiError(500, "Account deletion failed.");
-    }
-
-    return res
-        .status(200)
-        .clearCookie("accessToken")
-        .clearCookie("refreshToken")
-        .json(
-            {
-                statusCode: 200,
-                message: "Account Deletion Successfull.",
-                success: true
-            }
-        );
 }
 
 const updateAccessToken = async (req, res, next) => {
