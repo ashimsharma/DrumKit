@@ -72,7 +72,7 @@ export default function () {
         }
     })
     const [oldTime, setOldTime] = useState();
-    const { soundArray, setSoundArray, recordingStarted, setRecordingStarted, checked } = useContext(HomeContext);
+    const { soundArray, setSoundArray, recordingStarted, setRecordingStarted, checked, saveRecordingShown } = useContext(HomeContext);
 
     let soundPaths = {
         'a': Tom1Sound,
@@ -86,7 +86,8 @@ export default function () {
 
     async function playSound(e, drumString) {
         recordingStarted && recordSound(drumString);
-
+        if(saveRecordingShown.current) return;
+        
         let sound = new Audio(soundPaths[drumString]);
         await sound.play();
     }

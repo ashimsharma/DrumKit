@@ -190,6 +190,95 @@ const registerUser = async (req, res) => {
     }
 }
 
+const sendOTP = async (req, res) => {
+    try {
+        const { email } = req?.body;
+
+        if (
+            [email].some((field) => field?.trim() === "")
+        ) {
+            return res
+                .status(401)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "Email is required."
+                    }
+                )
+        }
+
+        if (!(validateEmail(email))) {
+            return res
+                .status(400)
+                .json(
+                    {
+                        statusCode: 400,
+                        success: false,
+                        message: "Invalid Email."
+                    }
+                )
+        }
+
+        const existingUser = await User.findOne({ email });
+
+
+        if (!existingUser) {
+            return res
+                .status(409)
+                .json(
+                    {
+                        statusCode: 401,
+                        success: false,
+                        message: "User with email does not exist."
+                    }
+                )
+        }
+
+        const otp = generateOTP();
+        const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+        const user = await User.findOneAndUpdate(
+            {email: email},
+            {$set: {
+                otp,
+                otpExpires
+            }},
+            {new: true}
+        );
+
+        sendVerificationEmail(email, otp);
+
+        const verificationToken = generateVerificationToken(user._id, email);
+
+        const options = {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
+        };
+
+        return res.status(200)
+            .cookie("verificationToken", verificationToken, options)
+            .json(
+                {
+                    statusCode: 200,
+                    message: "Verification OTP sent. Check Your Email.",
+                    success: true
+                }
+            );
+    } catch (error) {
+        return res
+            .status(501)
+            .json(
+                {
+                    statusCode: 501,
+                    success: false,
+                    message: "Internal Server Error."
+                }
+            )
+    }
+}
+
 const verifyEmail = async (req, res) => {
     try {
         const token = req.cookies?.verificationToken || req.headers["Verification"]?.replace("Bearer ", "");
@@ -1190,4 +1279,4 @@ const updateAccessToken = async (req, res, next) => {
     });
 }
 
-export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser, updateAccessToken, isAuthenticated, convertGuestAccount, verifyEmail, resendOTP, forgotPasswordSendEmail, generateNewPassword };
+export { registerUser, loginUser, registerGuest, logoutUser, logoutGuest, updateUser, updatePassword, getUserDetails, deleteUser, updateAccessToken, isAuthenticated, convertGuestAccount, verifyEmail, resendOTP, forgotPasswordSendEmail, generateNewPassword, sendOTP };

@@ -4,7 +4,7 @@ import StopButton from "../images/Stop-Button.png";
 import { HomeContext } from "./Home.jsx";
 
 export default function RecordToolBar() {
-    const {recordingStarted, setRecordingStarted, setRecordingEnded, recordingEnded} = useContext(HomeContext);
+    const {recordingStarted, setRecordingStarted, setRecordingEnded, recordingEnded, saveRecordingShown} = useContext(HomeContext);
 
     const handleRecordClick = () => {
         if(recordingEnded){
@@ -19,6 +19,7 @@ export default function RecordToolBar() {
         }
         setRecordingStarted(false);
         setRecordingEnded(true);
+        saveRecordingShown.current = true;
     }
 
     return (

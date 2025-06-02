@@ -3,6 +3,7 @@ import DrumKitImage from "../images/DrumKit-Image.jpg";
 import Drum from "../images/NavBar-Icon.png";
 import { useNavigate } from "react-router";
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+import { IoIosCloseCircle } from "react-icons/io";
 import { useForm } from "react-hook-form";
 import TypeAnimation from "./TypeAnimation.jsx";
 import PopUp from "./PopUp.jsx";
@@ -18,6 +19,7 @@ export default function Login() {
     const [message, setMessage] = useState('Logging In...');
     const [show, setShow] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [emailVerified, setEmailVerified] = useState(true);
 
     useEffect(() => {
         (async () => {
@@ -70,6 +72,9 @@ export default function Login() {
             }, 1000);
         } catch (error) {
             setMessage(error.response?.data.message || 'Failed to connect to server. Try Again Later.');
+            if (error.response?.data.message === "Email not verified yet. Verify Email to Login.") {
+                setEmailVerified(false);
+            }
             setError(true);
             setTimeout(() => {
                 setError(false);
@@ -91,6 +96,7 @@ export default function Login() {
             )
 
             if (response) {
+                console.log("I ran");
                 setMessage(response.data.message);
                 setError(false);
             }
@@ -166,7 +172,17 @@ export default function Login() {
                             <div className="text-center">
                                 <button className="bg-emerald-500 hover:bg-emerald-700 p-2 rounded-lg text-white cursor-pointer w-3/4 mt-2" onClick={loginGuest}>Login as guest</button>
                             </div>
-                            <p className="text-white text-center p-4 my-12">Dont't have an account? <button className="bg-none underline text-blue-700" onClick={navigateToSignup}>Create One</button></p>
+                            {!emailVerified && <div className="bg-blue-100/10 rounded-lg border-2 border-blue-600 mt-4 flex">
+                                <p className="text-white text-center p-4 basis-4/5">The Email you are trying to login with is not verified! <button className="bg-none underline text-blue-700" onClick={() => navigate("/input-email", {
+                                    state: {
+                                        from: location.pathname
+                                    }
+                                })}>Verify Email Now</button></p>
+                                <div className="flex justify-end basis-1/5 p-2 hover:cursor-pointer" onClick={() => setEmailVerified(true)}>
+                                    <IoIosCloseCircle size={20} color="gray"/>
+                                </div>
+                            </div>}
+                            <p className="text-white text-center p-4 mt-10">Dont't have an account? <button className="bg-none underline text-blue-700" onClick={navigateToSignup}>Create One</button></p>
                         </div>
                     </div>
                 </div>

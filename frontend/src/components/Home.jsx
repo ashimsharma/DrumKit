@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useRef } from "react";
 import DrumKit from "./DrumKit.jsx";
 import RecordToolBar from "./RecordToolBar.jsx";
 import SaveRecording from "./SaveRecording.jsx";
@@ -25,6 +25,7 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [checked, setChecked] = useState(false);
     const navigate = useNavigate();
+    const saveRecordingShown = useRef(false);
 
     useEffect(() => {
         (async () => {
@@ -80,12 +81,13 @@ export default function Home() {
             setRecordingName('');
             setRecordingSaved(false);
         }
+        saveRecordingShown.current = false;
     }
 
     return (
         loading ? <Loader /> :
             <>
-                <HomeContext.Provider value={{ recordingStarted, setRecordingStarted, recordingEnded, setRecordingEnded, recordingName, setRecordingName, setShowNotification, soundArray, setSoundArray, recordingSaved, setRecordingSaved, checked }}>
+                <HomeContext.Provider value={{ recordingStarted, setRecordingStarted, recordingEnded, setRecordingEnded, recordingName, setRecordingName, setShowNotification, soundArray, setSoundArray, recordingSaved, setRecordingSaved, checked, saveRecordingShown }}>
                     <NavBar />
                     <main className={`bg-gray-900 text-white p-4 h-screen`}>
                         {showNotification.show && <PopUp message={showNotification.message} positiveMessage={showNotification.positiveMessage} />}

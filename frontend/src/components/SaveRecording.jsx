@@ -3,7 +3,7 @@ import { HomeContext } from "./Home.jsx";
 import { useForm } from "react-hook-form";
 
 export default function SaveRecording() {
-    const { setRecordingEnded, setRecordingName, setShowNotification, recordingEnded, setRecordingSaved } = useContext(HomeContext);
+    const { setRecordingEnded, setRecordingName, setShowNotification, recordingEnded, setRecordingSaved, saveRecordingShown } = useContext(HomeContext);
     const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onChange" });
 
     const handleSaveClick = (data) => {
@@ -14,6 +14,7 @@ export default function SaveRecording() {
 
     const handleCancelClick = () => {
         setRecordingEnded(false);
+        saveRecordingShown.current = false;
     }
 
     return (

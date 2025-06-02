@@ -13,6 +13,7 @@ import store from './redux/store.js';
 import VerifyEmail from './components/VerifyEmail.jsx';
 import ForgotPasswordEmailInput from './components/ForgotPasswordEmailInput.jsx';
 import NewPassword from './components/NewPassword.jsx';
+import InputEmail from './components/InputEmail.jsx';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/signup' element={<Signup />} />
             <Route path='/verify-email' element={<VerifyEmail/>} />
+            <Route path='/input-email' element={<InputEmail/>} />
             <Route path='/profile' element={<Profile />} />
             <Route path='/profile/update-profile' element={<UpdateProfile />} />
             <Route path='/profile/update-password' element={<UpdatePassword />} />
