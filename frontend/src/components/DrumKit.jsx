@@ -29,9 +29,7 @@ export default function () {
 
             keyPressed = true;
 
-            console.log("I ran");
-
-            switch(e.key){
+            switch(e.key.toLowerCase()){
                 case 'a':
                     playSound(e, 'a');
                     break;
@@ -88,7 +86,7 @@ export default function () {
         recordingStarted && recordSound(drumString);
         if(saveRecordingShown.current) return;
         
-        let sound = new Audio(soundPaths[drumString]);
+        let sound = new Audio(soundPaths[drumString.toLowerCase()]);
         await sound.play();
     }
 

@@ -14,6 +14,7 @@ import VerifyEmail from './components/VerifyEmail.jsx';
 import ForgotPasswordEmailInput from './components/ForgotPasswordEmailInput.jsx';
 import NewPassword from './components/NewPassword.jsx';
 import InputEmail from './components/InputEmail.jsx';
+import Credits from './components/Credits.jsx';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path='/verify-email' element={<VerifyEmail/>} />
             <Route path='/input-email' element={<InputEmail/>} />
             <Route path='/profile' element={<Profile />} />
+            <Route path='/credits' element={<Credits />} />
             <Route path='/profile/update-profile' element={<UpdateProfile />} />
             <Route path='/profile/update-password' element={<UpdatePassword />} />
             <Route path='/forgot-password-email-input' element={<ForgotPasswordEmailInput />} />

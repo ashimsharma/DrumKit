@@ -84,13 +84,21 @@ export default function () {
             <RecordingsContext.Provider value={{ recordingDatas, playedSoundId, setPlayedSoundId, setShowNotification, setRecordingDeleted }}>
                 {showNotification.show && <PopUp message={showNotification.message} positiveMessage={showNotification.positiveMessage} />}
                 <NavBar />
-                <div className="bg-gray-900 text-white h-screen">
+                <div className={`bg-gray-900 text-white h-screen`}>
                     <h1 className="text-center text-4xl p-4">Recordings</h1>
-                    {recordings.map((recording) => {
+                    {(recordings.length !== 0) && recordings.map((recording) => {
                         return (
                             <RecordingCard recordingName={recording.name} key={recording._id} id={recording._id} />
                         )
                     })}
+                    {
+                        (recordings.length === 0) &&
+                        <div className="h-3/5 flex items-center justify-center">
+                            <p className="text-gray-300 text-sm text-center">
+                                Nothing to show here for now.
+                            </p>
+                        </div>
+                    }
                 </div>
                 <Footer />
             </RecordingsContext.Provider>

@@ -30,7 +30,7 @@ export default function NavBar() {
                 </div>
 
                 <div className="flex-grow flex justify-end items-center basis-4/12 lg:hidden">
-                    <img src={UserIcon} alt="User" className="h-12 w-12 cursor-pointer" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)} />
+                    <img src={UserIcon} alt="User" className="h-14 w-14 cursor-pointer" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)} />
                     <DropDown isOpen={isOpen} />
                 </div>
             </nav>

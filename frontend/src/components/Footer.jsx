@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
-import LinkedInIcon from "../images/LinkedIn-Icon.png";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useLocation } from "react-router";
+import { BsFillInfoSquareFill } from "react-icons/bs";
 
 export default function Footer() {
     const [currentYear, setCurrentYear] = useState();
     const location = useLocation();
     const isAuthPage = (location.pathname === '/signup') || (location.pathname === '/login');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const date = new Date();
@@ -32,6 +33,15 @@ export default function Footer() {
                 </span>
                 <span className="flex-grow lg:text-sm">
                     <p className="text-center">&copy; <span>{currentYear}</span> Ashim Sharma. All rights reserved.</p>
+                </span>
+                <span>
+                    <div className="text-gray-400 text-3xl lg:text-2xl cursor-pointer hover:text-gray-600">
+                        <BsFillInfoSquareFill onClick={() => navigate("/credits", {
+                            state: {
+                                from: location.pathname
+                            }
+                        })} />
+                    </div>
                 </span>
             </footer>
         </>
