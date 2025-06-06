@@ -32,6 +32,7 @@ export default function UpdatePassword() {
         register,
         handleSubmit,
         formState: { errors },
+        reset
     } = useForm({
         mode: "onChange",
     });
@@ -43,6 +44,7 @@ export default function UpdatePassword() {
     };
 
     const onSubmit = async (data) => {
+        reset();
         try {
             setShowNotification({ show: true, positiveMessage: true, message: 'Updating Password...' });
             const response = await axios.patch(

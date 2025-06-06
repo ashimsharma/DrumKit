@@ -34,7 +34,7 @@ export default function sendVerificationEmail(userEmail, otp) {
           <tr>
             <td style="padding: 30px; text-align: center;">
               <h1 style="margin: 0; font-size: 28px; color: #111;">🔐 Your Drumkit OTP</h1>
-              <p style="font-size: 16px; color: #555;">Use the code below to complete your login. This code will expire in 10 minutes.</p>
+              <p style="font-size: 16px; color: #555;">Use the code below to verify your Email. This code will expire in 10 minutes.</p>
               <div style="margin: 30px auto; font-size: 32px; font-weight: bold; letter-spacing: 4px; color: #1a73e8;">
                 ${otp}
               </div>

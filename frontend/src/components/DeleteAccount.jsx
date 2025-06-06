@@ -31,6 +31,7 @@ export default function DeleteAccount() {
         register,
         handleSubmit,
         formState: { errors },
+        reset
     } = useForm({
         mode: "onChange",
     });
@@ -42,8 +43,9 @@ export default function DeleteAccount() {
     };
 
     const onSubmit = async (data) => {
+        reset();
         try {
-            setShowNotification({ show: true, positiveMessage: true, message: 'Updating Password...' });
+            setShowNotification({ show: true, positiveMessage: true, message: 'Deleting Account...' });
             const response = await axios.post(
                 `${import.meta.env.VITE_API_URL}/users/delete-account`,
                 data,
