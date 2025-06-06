@@ -24,8 +24,8 @@ export default function RecordingCard({ recordingName, id }) {
         'd': Tom3Sound,
         'f': Tom4Sound,
         'j': SnareSound,
-        'k': CrashSound,
-        'l': KickBassSound
+        'l': CrashSound,
+        'k': KickBassSound
     }
 
     const showError = () => {
