@@ -144,6 +144,9 @@ export default function Profile() {
                                     {!userData.isGuest && <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg mx-2 my-2" onClick={() => navigate("/profile/update-password")}>
                                         Edit Password
                                     </button>}
+                                    {!userData.isGuest && <button className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg mx-2 my-2" onClick={() => navigate("/profile/delete-account")}>
+                                        Delete Account
+                                    </button>}
                                 </div>
 
                                 <div className="mt-2 text-gray-500 mb-0">

@@ -120,7 +120,7 @@ export default function RecordingCard({ recordingName, id }) {
 
     return (
         <>
-            <div className="w-1/2 mx-auto bg-slate-600 p-2 px-4 rounded-lg my-6 ring-2 ring-blue-600 lg:w-3/4 flex">
+            <div className="w-1/2 mx-auto bg-slate-600 p-2 px-4 rounded-lg mb-4 ring-2 ring-blue-600 lg:w-3/4 flex">
                 <div className="basis-3/4 flex items-center">
                     <p>{recordingName}</p>
                 </div>

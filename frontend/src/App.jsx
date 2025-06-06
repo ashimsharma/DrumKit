@@ -15,6 +15,7 @@ import ForgotPasswordEmailInput from './components/ForgotPasswordEmailInput.jsx'
 import NewPassword from './components/NewPassword.jsx';
 import InputEmail from './components/InputEmail.jsx';
 import Credits from './components/Credits.jsx';
+import DeleteAccount from './components/DeleteAccount.jsx';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             <Route path='/credits' element={<Credits />} />
             <Route path='/profile/update-profile' element={<UpdateProfile />} />
             <Route path='/profile/update-password' element={<UpdatePassword />} />
+            <Route path='/profile/delete-account' element={<DeleteAccount />} />
             <Route path='/forgot-password-email-input' element={<ForgotPasswordEmailInput />} />
             <Route path='/new-password' element={<NewPassword />} />
             <Route path='/profile/register-guest' element={<RegisterGuest />} />

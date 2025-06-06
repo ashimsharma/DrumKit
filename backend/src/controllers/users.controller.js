@@ -609,18 +609,6 @@ const loginUser = async (req, res) => {
 
         const user = await User.findOne({ email });
 
-        if (!user.isVerified) {
-            return res
-                .status(402)
-                .json(
-                    {
-                        statusCode: 402,
-                        success: false,
-                        message: "Email not verified yet. Verify Email to Login."
-                    }
-                )
-        }
-
         if (!user) {
             return res
                 .status(404)
@@ -629,6 +617,18 @@ const loginUser = async (req, res) => {
                         statusCode: 404,
                         success: false,
                         message: "User not found."
+                    }
+                )
+        }
+
+        if (!user?.isVerified) {
+            return res
+                .status(402)
+                .json(
+                    {
+                        statusCode: 402,
+                        success: false,
+                        message: "Email not verified yet. Verify Email to Login."
                     }
                 )
         }
@@ -1156,7 +1156,7 @@ const deleteUser = async (req, res, next) => {
         const user = await User.findById(req.user._id);
         const { password } = req.body;
 
-        const passwordCorrect = user.isPasswordCorrect(password);
+        const passwordCorrect = await user.isPasswordCorrect(password);
 
         if (!passwordCorrect) {
             return res
@@ -1173,7 +1173,13 @@ const deleteUser = async (req, res, next) => {
         const userDelete = await User.findByIdAndDelete(user._id);
 
         if (!userDelete) {
-            throw new ApiError(500, "Account deletion failed.");
+            return res.status(404).json(
+                {
+                    statusCode: 404,
+                    message: "Account Deletion Failed.",
+                    success: false
+                }
+            )
         }
 
         return res

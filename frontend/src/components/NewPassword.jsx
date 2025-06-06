@@ -111,7 +111,7 @@ export default function NewPassword() {
                             className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-200"
                             onClick={() => setShowNewPassword(!showNewPassword)}
                         >
-                            {showNewPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
+                            {!showNewPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
                         </div>
                     </div>
                     <div className="relative">
@@ -128,7 +128,7 @@ export default function NewPassword() {
                             className="absolute right-4 top-9 transform -translate-y-1/2 cursor-pointer"
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         >
-                            {showConfirmPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
+                            {!showConfirmPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
                         </div>
                         <p className="text-red-500 text-sm h-4">{errors.newPassword?.message || errors.confirmPassword?.message}</p>
                     </div>

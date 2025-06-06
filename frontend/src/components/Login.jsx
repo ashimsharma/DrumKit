@@ -96,7 +96,6 @@ export default function Login() {
             )
 
             if (response) {
-                console.log("I ran");
                 setMessage(response.data.message);
                 setError(false);
             }

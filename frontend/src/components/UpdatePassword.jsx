@@ -110,7 +110,7 @@ export default function UpdatePassword() {
                             className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-200"
                             onClick={() => setShowOldPassword(!showOldPassword)}
                         >
-                            {showOldPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
+                            {!showOldPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
                         </div>
                     </div>
 
@@ -126,7 +126,7 @@ export default function UpdatePassword() {
                             className="absolute right-4 top-9 transform -translate-y-1/2 cursor-pointer"
                             onClick={() => setShowNewPassword(!showNewPassword)}
                         >
-                            {showNewPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
+                            {!showNewPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
                         </div>
                         <p className="text-red-500 text-sm mt-1 h-4">{errors.oldPassword?.message || errors.newPassword?.message}</p>
                     </div>

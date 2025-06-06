@@ -23,6 +23,7 @@ userRouter.route("/update-password").patch(verifyJWT, updatePassword);
 userRouter.route("/get-user").get(verifyJWT, getUserDetails);
 userRouter.route("/delete-user").delete(verifyJWT, deleteUser);
 userRouter.route("/convert-guest").post(verifyJWT, convertGuestAccount);
+userRouter.route("/delete-account").post(verifyJWT, deleteUser);
 
 // Check Authentication Route
 userRouter.route("/check-auth").get(verifyJWT, isAuthenticated);
