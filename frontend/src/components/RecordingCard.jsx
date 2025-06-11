@@ -37,6 +37,13 @@ export default function RecordingCard({ recordingName, id }) {
     }
 
     const handlePlayOrPause = (e) => {
+        if(playedSoundId === id){
+            updatePlay();
+            setPlayed(false);
+            setPlayedSoundId(null);
+            return;
+        }
+
         if (playedSoundId) {
             showError();
             return;
@@ -85,9 +92,7 @@ export default function RecordingCard({ recordingName, id }) {
         let recordedSound = recordingDatas[id];
 
         for (let i = 0; i < recordedSound.length; i++) {
-            // e.target.parentElement.previousSibling.classList.add('visibility');
             await delay(recordedSound[i][1]);
-            // e.target.parentElement.previousSibling.classList.remove('visibility');
             playedBool.current && playSound(recordedSound[i][0]);
 
             if (!playedBool.current) {
