@@ -131,7 +131,7 @@ export default function Login() {
                         <div className="absolute bg-gray-800 w-1/2 h-full blur-3xl opacity-70 lg:hidden"></div>
                         <img src={DrumKitImage} alt="Drum kit Image" className="w-full h-full" />
                     </div>
-                    <div className="bg-slate-800 w-full h-full">
+                    <div className="bg-slate-800 w-full h-full lg:min-h-screen">
                         <div className="flex flex-row justify-end p-4 lg:justify-start">
                             <img src={Drum} alt="Drum Logo" className="h-16" />
                         </div>

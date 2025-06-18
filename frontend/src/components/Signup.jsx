@@ -94,7 +94,7 @@ export default function Login() {
                 {show && <PopUp positiveMessage={!error} message={message} />}
 
                 <div className="grid grid-cols-2 bg-slate min-h-screen lg:block m-0 h-full min-w-screen w-full">
-                    <div className="bg-slate-800 w-full h-full">
+                    <div className="bg-slate-800 w-full h-full lg:min-h-screen">
                         <div className="flex flex-row justify-start p-4 lg:justify-start">
                             <img src={Drum} alt="Drum Logo" className="h-16" />
                         </div>
