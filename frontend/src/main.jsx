@@ -6,9 +6,7 @@ import store from './redux/store.js'
 import './index.css';
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
     <Provider store={store}>
       <App />
-    </Provider>
-  </StrictMode>,
+    </Provider>,
 )
